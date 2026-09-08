@@ -63,6 +63,54 @@ final class Schema
         });
     }
 
+    /** 允许管理员明确指定哪些商品的已售卡密可用于会员权益兑换。 */
+    public static function ensureCommodityRedeemStatus(): void
+    {
+        self::ensureColumn('commodity', 'redeem_status', static function (Blueprint $table): void {
+            $table->unsignedTinyInteger('redeem_status')->default(0)->comment('卡密兑换：0=关闭，1=启用');
+        });
+    }
+
+    /**
+     * 兑换表需要兼容覆盖升级的老站；Install.sql 只负责全新安装。
+     */
+    public static function ensureCardRedeem(): void
+    {
+        self::ensureCommodityRedeemStatus();
+
+        if (self::tableExists('card_redeem')) {
+            return;
+        }
+
+        try {
+            Manager::schema()->create('card_redeem', static function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->unsignedInteger('card_id');
+                $table->string('account_email', 190)->nullable();
+                $table->string('account_plan', 190)->nullable();
+                $table->string('account_expire', 64)->nullable();
+                $table->mediumText('session_payload')->nullable();
+                $table->unsignedTinyInteger('status')->default(0);
+                $table->string('message', 500)->nullable();
+                $table->dateTime('create_time');
+                $table->dateTime('update_time')->nullable();
+                $table->unique('card_id', 'uk_card_id');
+                $table->index('status', 'idx_status');
+            });
+        } catch (\Throwable $e) {
+            // 两个首次请求并发建表时，后到的请求会收到“表已存在”；确认建成即可继续。
+            if (!Manager::schema()->hasTable('card_redeem')) {
+                throw $e;
+            }
+        }
+
+        self::$tableKnown['card_redeem'] = true;
+        if (!is_dir(self::MARK_DIR)) {
+            @mkdir(self::MARK_DIR, 0755, true);
+        }
+        @file_put_contents(self::MARK_DIR . '/table_card_redeem', (string)time());
+    }
+
     /** 店铺共享的对方货币与结算汇率：非 CNY 站点接入 CNY 货源时按此换算金额 */
     public static function ensureSharedCurrency(): void
     {

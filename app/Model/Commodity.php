@@ -30,6 +30,7 @@ use Kernel\Exception\JSONException;
  * @property int $contact_type
  * @property int $sort
  * @property int $password_status
+ * @property int $redeem_status
  * @property int $coupon
  * @property int $shared_id
  * @property string $shared_code
@@ -95,6 +96,7 @@ class Commodity extends Model
         'shared_id' => 'integer',
         'seckill_status' => 'integer',
         'password_status' => 'integer',
+        'redeem_status' => 'integer',
         'category_id' => 'integer',
         'api_status' => 'integer',
         'draft_status' => 'integer',

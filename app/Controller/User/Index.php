@@ -104,6 +104,7 @@ class Index extends User
      */
     public function activate(): string
     {
+        \App\Util\Schema::ensureCardRedeem();
         return $this->theme("卡密激活", "ACTIVATE", "Index/Activate.html");
     }
 }

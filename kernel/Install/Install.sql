@@ -147,6 +147,7 @@ CREATE TABLE `__PREFIX__commodity`  (
                                         `delivery_message` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '手动发货显示信息',
                                         `contact_type` tinyint UNSIGNED NOT NULL DEFAULT 0 COMMENT '联系方式：0=任意，1=手机，2=邮箱，3=QQ',
                                         `password_status` tinyint UNSIGNED NOT NULL DEFAULT 0 COMMENT '订单密码：0=关闭，1=启用',
+                                        `redeem_status` tinyint UNSIGNED NOT NULL DEFAULT 0 COMMENT '卡密兑换：0=关闭，1=启用',
                                         `sort` smallint UNSIGNED NOT NULL DEFAULT 0 COMMENT '排序',
                                         `coupon` tinyint UNSIGNED NOT NULL DEFAULT 0 COMMENT '优惠卷：0=关闭，1=启用',
                                         `shared_id` int UNSIGNED NULL DEFAULT NULL COMMENT '共享平台ID',

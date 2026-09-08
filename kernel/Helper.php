@@ -358,7 +358,7 @@ if (!function_exists("maskSensitive")) {
         if (!is_array($data)) {
             return $data;
         }
-        static $pattern = '/(pass|pwd|secret|token|cookie|authorization|salt|private_?key|public_?key|app_?secret|api_?key|mch_?key|md5_?key|(^|_)key$|(^|_)sign$)/i';
+        static $pattern = '/(pass|pwd|secret|token|session|cookie|authorization|salt|private_?key|public_?key|app_?secret|api_?key|mch_?key|md5_?key|(^|_)key$|(^|_)sign$)/i';
         $masked = [];
         foreach ($data as $k => $v) {
             if (is_array($v)) {

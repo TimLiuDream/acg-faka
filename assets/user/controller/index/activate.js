@@ -120,9 +120,9 @@
         const plan = json?.planName || json?.plan || json?.user?.planName || '';
         const expire = json?.expires || json?.expire || '';
 
-        if (!json.accessToken && !json.sessionToken) {
+        if (typeof json.accessToken !== 'string' || json.accessToken.length < 80) {
             $accountBox.removeClass('is-ready').addClass('is-bad').html(
-                `<strong>${i18n('缺少 accessToken 或 sessionToken')}</strong><p>${i18n('请确认复制的是 Session 页面的完整 JSON。')}</p>`
+                `<strong>${i18n('缺少有效的 accessToken')}</strong><p>${i18n('请确认复制的是 Session 页面的完整 JSON。')}</p>`
             );
             return;
         }
@@ -160,8 +160,8 @@
             return;
         }
 
-        if (!json.accessToken && !json.sessionToken) {
-            message.error(i18n('Session JSON 缺少 accessToken 或 sessionToken'));
+        if (typeof json.accessToken !== 'string' || json.accessToken.length < 80) {
+            message.error(i18n('Session JSON 缺少有效的 accessToken'));
             return;
         }
 

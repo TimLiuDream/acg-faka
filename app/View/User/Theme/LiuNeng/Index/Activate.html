@@ -1,6 +1,6 @@
 #{assign var="lnPage" value="activate"}
 #{include file="./Header.html"}
-<link rel="stylesheet" href="/app/View/User/Theme/LiuNeng/assets/activate.css?build=20260908-activate-1">
+<link rel="stylesheet" href="/app/View/User/Theme/LiuNeng/assets/activate.css?build=20260908-activate-2">
 
 <main class="ln-activate-page">
     <div class="container ln-activate-layout">
@@ -45,9 +45,9 @@
                         <p>#{t("先确认 ChatGPT 已经登录：打开官网必须能直接进入聊天页。如果看到登录或注册页面，请先登录，否则获取的 Session 无效或已过期。")}</p>
                         <p>#{t("登录成功后重新打开 Session 页面。页面应显示一整段以 { 开头、以 } 结尾的 JSON，而不是登录页面。")}</p>
                         <p>#{t("全选并复制整段内容：电脑使用 Ctrl/Cmd + A，手机长按全选。不要只复制一部分，也不要通过聊天软件转发后再复制。")}</p>
-                        <p>#{t("完整内容需要包含")} <code>accessToken</code> #{t("或")} <code>sessionToken</code>，#{t("以及")} <code>user_email</code>#{t("。")}</p>
+                        <p>#{t("完整内容需要包含")} <code>accessToken</code>，#{t("以及")} <code>user_email</code>#{t("。")}</p>
                         <div class="ln-activate-warn">
-                            #{t("Session 会临时存储于服务端队列，仅用于本次自动充值；建议完成后在 ChatGPT 修改密码并退出所有设备，以失效所有会话。")}
+                            #{t("Session 会加密存储于服务端队列，完成或失败后立即删除，最长保留 24 小时。")}
                         </div>
                     </div>
                 </details>
@@ -55,7 +55,7 @@
                 <div class="ln-activate-progress" style="display:none" aria-live="polite"></div>
             </div>
 
-            <p class="ln-activate-foot">#{t("Session 属于敏感凭证，提交后将临时存储于服务端队列，仅用于本次自动充值。请勿分享给他人。")}</p>
+            <p class="ln-activate-foot">#{t("Session 属于敏感凭证，提交后会加密保存并在处理结束后删除。请勿分享给他人。")}</p>
             <button type="button" class="ln-activate-submit">
                 <i class="fa-duotone fa-regular fa-paper-plane"></i>#{t("确认账号并提交兑换")}
             </button>
@@ -71,11 +71,11 @@
             </ul>
             <div class="ln-activate-tip">
                 <i class="fa-duotone fa-regular fa-lock-keyhole"></i>
-                <p>#{t("Session 仅临时用于本次自动充值；完成后建议修改密码并退出所有设备。")}</p>
+                <p>#{t("Session 仅用于本次充值处理；完成后建议修改密码并退出所有设备。")}</p>
             </div>
         </aside>
     </div>
 </main>
 
-#{ready("/assets/user/controller/index/activate.js")}
+#{ready("/assets/user/controller/index/activate.js?build=20260908-activate-2")}
 #{include file="./Footer.html"}

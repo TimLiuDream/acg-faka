@@ -20,11 +20,14 @@ use App\Service\Query;
 use App\Service\Shared;
 use App\Service\Shop;
 use App\Util\Client;
+use App\Util\RedeemPayloadCrypto;
+use App\Util\Schema;
 use App\Util\Theme;
 use App\Util\Throttle;
 use App\Util\Tree;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Capsule\Manager as DB;
 use Kernel\Annotation\Inject;
 use Kernel\Annotation\Interceptor;
 use Kernel\Exception\JSONException;
@@ -501,7 +504,8 @@ class Index extends User
      */
     public function redeem(): array
     {
-        //与下单/查单同一条取参管线（Filter::NORMAL），保证与库内卡密经历同样的转换
+        Schema::ensureCardRedeem();
+        CardRedeem::pruneSensitivePayloads();
         $secret = trim((string)$this->request->post("secret", flags: Filter::NORMAL));
 
         if (mb_strlen($secret) < 4) {
@@ -510,43 +514,27 @@ class Index extends User
 
         //限流：卡密空间可被猜测，必须挡住批量枚举（本接口免登录）
         $ip = Client::getAddress();
+        $secretHash = hash('sha256', $secret);
         if (Throttle::tooMany("redeem:ip:{$ip}", 20, 600)
-            || Throttle::tooMany("redeem:no:" . md5($secret) . ":{$ip}", 6, 600)) {
+            || Throttle::tooMany("redeem:no:{$secretHash}:{$ip}", 6, 600)
+            || Throttle::tooMany("redeem:no:{$secretHash}", 20, 600)) {
             throw new JSONException("请求过于频繁，请稍后再试");
         }
 
-        //精确匹配（secret 列有索引），绝不模糊查询，避免部分前缀试探
-        $card = Card::with(["commodity" => function (Relation $relation) {
-            $relation->select(["id", "name", "cover", "leave_message"]);
-        }])->where("secret", $secret)->first();
+        $card = $this->redeemableCard($secret);
 
-        if (!$card) {
-            throw new JSONException("卡密不存在，请核对后重试");
-        }
-
-        $tradeNo = null;
-        if ($card->order_id) {
-            $tradeNo = Order::query()->where("id", $card->order_id)->value("trade_no");
-        }
-
-        //兑换进度恢复：换设备后输入原卡密即可取回处理状态
         $redeem = CardRedeem::query()->where("card_id", $card->id)->first();
 
         return $this->json(data: [
-            //0=未激活（未售出） 1=已激活 2=已锁定
-            "status" => (int)$card->status,
+            "status" => 1,
             "commodity" => [
                 "name" => $card->commodity?->name,
                 "cover" => $card->commodity?->cover,
             ],
-            "purchase_time" => $card->purchase_time,
-            "trade_no" => $tradeNo,
             "redeem" => $redeem ? [
-                "status" => (int)$redeem->status,   //0=排队中 1=处理中 2=已完成 3=失败
-                "account_email" => $redeem->account_email,
-                "account_plan" => $redeem->account_plan,
+                "status" => (int)$redeem->status,
                 "create_time" => $redeem->create_time,
-                "message" => $redeem->message,
+                "update_time" => $redeem->update_time,
             ] : null,
         ]);
     }
@@ -558,9 +546,9 @@ class Index extends User
      */
     public function redeemSubmit(): array
     {
-        //与 redeem 同一条取参管线
+        Schema::ensureCardRedeem();
+        CardRedeem::pruneSensitivePayloads();
         $secret = trim((string)$this->request->post("secret", flags: Filter::NORMAL));
-        //Session JSON 走 unsafePost：引号会被 xssKiller 实体化，破坏 JSON 结构
         $session = trim((string)$this->request->unsafePost("session"));
 
         if (mb_strlen($secret) < 4) {
@@ -576,73 +564,128 @@ class Index extends User
             throw new JSONException("Session JSON 格式不正确");
         }
 
-        if (empty($sessionJson["accessToken"]) && empty($sessionJson["sessionToken"])) {
-            throw new JSONException("Session JSON 缺少 accessToken 或 sessionToken");
-        }
+        [$email, $plan, $expire] = $this->validateRedeemSession($sessionJson);
 
         //限流：提交侧比验证侧更严格
         $ip = Client::getAddress();
+        $secretHash = hash('sha256', $secret);
         if (Throttle::tooMany("redeem:ip:{$ip}", 20, 600)
-            || Throttle::tooMany("redeemSubmit:no:" . md5($secret) . ":{$ip}", 3, 600)) {
+            || Throttle::tooMany("redeemSubmit:no:{$secretHash}:{$ip}", 3, 600)
+            || Throttle::tooMany("redeemSubmit:no:{$secretHash}", 6, 600)) {
             throw new JSONException("请求过于频繁，请稍后再试");
         }
 
-        $card = Card::query()->where("secret", $secret)->first();
-        if (!$card) {
-            throw new JSONException("卡密不存在，请核对后重试");
-        }
-
-        if ((int)$card->status === 2) {
-            throw new JSONException("该卡密已被锁定，无法兑换");
-        }
-
-        //尽力提取账号信息供队列与展示使用，缺失不阻断
-        $email = $sessionJson["user"]["email"] ?? $sessionJson["user_email"] ?? null;
-        $plan = $sessionJson["planName"] ?? $sessionJson["plan"] ?? $sessionJson["user"]["planName"] ?? null;
-        $expire = $sessionJson["expires"] ?? $sessionJson["expire"] ?? null;
-        $email = is_scalar($email) ? mb_substr((string)$email, 0, 190) : null;
-        $plan = is_scalar($plan) ? mb_substr((string)$plan, 0, 190) : null;
-        $expire = is_scalar($expire) ? mb_substr((string)$expire, 0, 64) : null;
-
         $now = date("Y-m-d H:i:s");
-        $redeem = CardRedeem::query()->where("card_id", $card->id)->first();
-
-        if ($redeem && in_array((int)$redeem->status, [0, 1], true)) {
-            throw new JSONException("该卡密已在处理队列中，请勿重复提交");
+        try {
+            $encryptedSession = RedeemPayloadCrypto::encrypt($session);
+        } catch (\Throwable) {
+            throw new JSONException("兑换服务暂不可用，请联系支持");
         }
 
-        if ($redeem && (int)$redeem->status === 2) {
-            throw new JSONException("该卡密已完成兑换，无需重复提交");
-        }
+        DB::transaction(function () use ($secret, $email, $plan, $expire, $encryptedSession, $now): void {
+            $card = $this->redeemableCard($secret, true);
+            $redeem = CardRedeem::query()->where("card_id", $card->id)->lockForUpdate()->first();
 
-        if ($redeem) {
-            //失败重提：覆盖为重新排队
-            $redeem->account_email = $email;
-            $redeem->account_plan = $plan;
-            $redeem->account_expire = $expire;
-            $redeem->session_payload = $session;
-            $redeem->status = 0;
-            $redeem->message = null;
-            $redeem->update_time = $now;
-            $redeem->save();
-        } else {
-            $redeem = new CardRedeem();
+            if ($redeem && in_array((int)$redeem->status, [CardRedeem::STATUS_QUEUED, CardRedeem::STATUS_PROCESSING], true)) {
+                throw new JSONException("该卡密已在处理队列中，请勿重复提交");
+            }
+            if ($redeem && (int)$redeem->status === CardRedeem::STATUS_COMPLETED) {
+                throw new JSONException("该卡密已完成兑换，无需重复提交");
+            }
+
+            $redeem ??= new CardRedeem();
             $redeem->card_id = $card->id;
             $redeem->account_email = $email;
             $redeem->account_plan = $plan;
             $redeem->account_expire = $expire;
-            $redeem->session_payload = $session;
-            $redeem->status = 0;
+            $redeem->session_payload = $encryptedSession;
+            $redeem->status = CardRedeem::STATUS_QUEUED;
+            $redeem->message = null;
             $redeem->create_time = $now;
+            $redeem->update_time = $now;
             $redeem->save();
-        }
+        });
 
         return $this->json(data: [
-            "status" => 0,
+            "status" => CardRedeem::STATUS_QUEUED,
             "status_text" => "排队中",
-            "account_email" => $email,
             "create_time" => $now,
         ]);
+    }
+
+    private function redeemableCard(string $secret, bool $lockForUpdate = false): Card
+    {
+        $query = Card::with(['commodity'])->where('secret', $secret)->limit(2);
+        if ($lockForUpdate) {
+            $query->lockForUpdate();
+        }
+        $cards = $query->get();
+
+        if ($cards->count() !== 1) {
+            throw new JSONException("卡密不存在或不可用于兑换");
+        }
+
+        /** @var Card $card */
+        $card = $cards->first();
+        if ((int)$card->status !== 1 || !$card->commodity || (int)$card->commodity->redeem_status !== 1) {
+            throw new JSONException("卡密不存在或不可用于兑换");
+        }
+
+        if ((int)$card->order_id > 0) {
+            $orderQuery = Order::query()->whereKey($card->order_id);
+            if ($lockForUpdate) {
+                $orderQuery->lockForUpdate();
+            }
+            $order = $orderQuery->first(['id', 'commodity_id', 'status']);
+            if (!$order || (int)$order->status !== 1 || (int)$order->commodity_id !== (int)$card->commodity_id) {
+                throw new JSONException("卡密不存在或不可用于兑换");
+            }
+        }
+
+        return $card;
+    }
+
+    /** @return array{0:?string,1:?string,2:?string} */
+    private function validateRedeemSession(array $session): array
+    {
+        $token = $session['accessToken'] ?? null;
+        if (!is_string($token) || strlen($token) < 80 || strlen($token) > 16000) {
+            throw new JSONException("Session JSON 缺少有效的 accessToken");
+        }
+
+        $parts = explode('.', $token);
+        if (count($parts) !== 3) {
+            throw new JSONException("accessToken 格式不正确");
+        }
+
+        $header = $this->decodeJwtPart($parts[0]);
+        $claims = $this->decodeJwtPart($parts[1]);
+        if (!$header || !$claims || empty($header['alg']) || strtolower((string)$header['alg']) === 'none') {
+            throw new JSONException("accessToken 格式不正确");
+        }
+        if (!isset($claims['exp']) || !is_numeric($claims['exp']) || (int)$claims['exp'] <= time() + 60) {
+            throw new JSONException("accessToken 已过期，请重新登录 ChatGPT 后获取");
+        }
+
+        $email = $session['user']['email'] ?? $session['user_email'] ?? $claims['email'] ?? null;
+        $plan = $session['planName'] ?? $session['plan'] ?? $session['user']['planName'] ?? null;
+        $expire = $session['expires'] ?? $session['expire'] ?? $claims['exp'] ?? null;
+        return [
+            is_scalar($email) ? mb_substr((string)$email, 0, 190) : null,
+            is_scalar($plan) ? mb_substr((string)$plan, 0, 190) : null,
+            is_scalar($expire) ? mb_substr((string)$expire, 0, 64) : null,
+        ];
+    }
+
+    private function decodeJwtPart(string $part): ?array
+    {
+        $part .= str_repeat('=', (4 - strlen($part) % 4) % 4);
+        $decoded = base64_decode(strtr($part, '-_', '+/'), true);
+        if ($decoded === false) {
+            return null;
+        }
+        $json = json_decode($decoded, true);
+        return is_array($json) ? $json : null;
     }
 
     /**

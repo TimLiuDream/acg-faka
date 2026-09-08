@@ -370,6 +370,7 @@ class Commodity extends Manage
      */
     public function data(): array
     {
+        \App\Util\Schema::ensureCommodityRedeemStatus();
         $map = $_POST;
         $get = new Get(\App\Model\Commodity::class);
         $get->setPaginate((int)$this->request->post("page"), (int)$this->request->post("limit"));
@@ -449,11 +450,12 @@ class Commodity extends Manage
      */
     public function save(Request $request): array
     {
+        \App\Util\Schema::ensureCommodityRedeemStatus();
         $raw = $request->post(flags: Filter::NORMAL);
         $allowed = [
             'id', 'category_id', 'name', 'description', 'cover', 'factory_price', 'price', 'user_price',
             'status', 'api_status', 'delivery_way', 'delivery_auto_mode', 'delivery_message', 'contact_type',
-            'password_status', 'sort', 'coupon', 'shared_id', 'shared_code', 'shared_premium',
+            'password_status', 'redeem_status', 'sort', 'coupon', 'shared_id', 'shared_code', 'shared_premium',
             'shared_premium_type', 'shared_premium_template',
             'seckill_status', 'seckill_start_time', 'seckill_end_time', 'draft_status',
             'draft_premium', 'inventory_hidden', 'leave_message', 'recommend', 'send_email', 'only_user',

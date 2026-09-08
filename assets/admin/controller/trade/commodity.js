@@ -312,6 +312,13 @@
                             text: "启用",
                             tips: "开启后，下单时需要设置查询订单的密码，更强的保护用户隐私"
                         },
+                        {
+                            title: "卡密激活兑换",
+                            name: "redeem_status",
+                            type: "switch",
+                            text: "启用",
+                            tips: "仅开启此项的商品，其已出售卡密才能在前台提交会员权益兑换"
+                        },
                     ]
                 },
                 {
@@ -1032,6 +1039,9 @@ ACC_JP_6M_0KLD-22MM-PP31║${i18n('地区')}:${i18n('日区')}·${i18n('时长')
         },
         {
             field: 'password_status', title: '订单密码', dict: "_commodity_api_status"
+        },
+        {
+            field: 'redeem_status', title: '卡密兑换', dict: "_commodity_api_status"
         },
         {
             field: 'coupon', title: '优惠卷', dict: "_commodity_api_status"
