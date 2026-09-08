@@ -427,6 +427,78 @@ a.ln-support-row:hover span, a.ln-support-row:hover i { color: var(--ln-blue); }
     .ln-support-row.is-empty { grid-template-columns: 92px minmax(0,1fr); }
 }
 
+/* ===== 卡密激活 ===== */
+.ln-activate-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 18px 26px;
+    max-width: 680px;
+    margin: 0 auto 46px;
+    padding: 24px;
+    border: 1px solid #e0e1e5;
+    border-radius: 21px;
+    background: #fff;
+    box-shadow: 0 14px 38px rgba(18,24,40,.05);
+}
+
+.ln-activate-card__main { display: flex; align-items: center; gap: 18px; min-width: 0; }
+
+.ln-activate-cover {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 76px;
+    height: 76px;
+    border: 1px solid var(--ln-line);
+    border-radius: 17px;
+    background: #f7f8f9;
+    object-fit: cover;
+    font-size: 22px;
+    color: var(--ln-muted);
+}
+
+.ln-activate-cover--empty { color: #a7acb5; }
+
+.ln-activate-card__info { min-width: 0; }
+
+.ln-activate-card__label { display: block; color: #818690; font-size: 9px; font-weight: 850; letter-spacing: .2em; }
+
+.ln-activate-card__info h3 { margin: 6px 0 0; color: var(--ln-ink); font-size: 19px; font-weight: 900; letter-spacing: -.03em; line-height: 1.2; overflow-wrap: anywhere; }
+
+.ln-activate-meta { display: flex; flex-direction: column; gap: 5px; margin-top: 12px; }
+
+.ln-activate-meta__row { display: flex; align-items: baseline; gap: 12px; }
+
+.ln-activate-meta__row span { flex: 0 0 auto; color: var(--ln-muted); font-size: 11px; font-weight: 650; }
+
+.ln-activate-meta__row strong { color: var(--ln-ink); font-size: 12px; font-weight: 700; word-break: break-all; }
+
+.ln-activate-trade { color: var(--ln-blue); text-decoration: none; }
+
+.ln-activate-trade:hover { text-decoration: underline; }
+
+.ln-activate-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    flex: 0 0 auto;
+    min-height: 36px;
+    padding: 0 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.ln-activate-status.is-active { color: #087354; background: #edf9f4; border: 1px solid #cce7db; }
+.ln-activate-status.is-pending { color: #9a6700; background: #fff8e6; border: 1px solid #f3e2b3; }
+.ln-activate-status.is-locked { color: #c32b49; background: #fff1f4; border: 1px solid #f1cdd4; }
+
+@media (max-width: 767.98px) {
+    .ln-activate-card { flex-direction: column; align-items: flex-start; }
+}
+
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }

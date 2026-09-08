@@ -97,4 +97,13 @@ class Index extends User
     {
         return $this->theme("订单查询", "QUERY", "Index/Query.html", ['user' => $this->getUser(), 'tradeNo' => (string)$_GET['tradeNo']]);
     }
+
+    /**
+     * @return string
+     * @throws ViewException
+     */
+    public function activate(): string
+    {
+        return $this->theme("卡密激活", "ACTIVATE", "Index/Activate.html");
+    }
 }

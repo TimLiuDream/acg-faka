@@ -1,0 +1,81 @@
+#{assign var="lnPage" value="activate"}
+#{include file="./Header.html"}
+<link rel="stylesheet" href="/app/View/User/Theme/LiuNeng/assets/activate.css?build=20260908-activate-1">
+
+<main class="ln-activate-page">
+    <div class="container ln-activate-layout">
+        <article class="ln-activate-main">
+            <h1>#{t("兑换你的会员权益")}</h1>
+            <p class="ln-activate-sub">#{t("请输入购买后收到的 TimLiu 卡密（支持本站订单或闲鱼发放）。支付凭证不能用于兑换。")}</p>
+
+            <div class="ln-activate-step">
+                <div class="ln-activate-step__head">
+                    <span class="ln-activate-step__no">1</span>
+                    <strong>#{t("验证卡密")}</strong>
+                </div>
+                <label for="lnActivateSecret">#{t("TimLiu 卡密")}</label>
+                <div class="ln-activate-verify-row">
+                    <input id="lnActivateSecret" type="text" name="secret" autocomplete="off"
+                           placeholder="TimLiu-XXXX-XXXX-XXXX">
+                    <button type="button" class="ln-activate-verify">
+                        <i class="fa-duotone fa-regular fa-rotate"></i>#{t("验证卡密 / 恢复进度")}
+                    </button>
+                </div>
+                <div class="ln-activate-verify-state" aria-live="polite"></div>
+            </div>
+
+            <div class="ln-activate-step">
+                <div class="ln-activate-step__head">
+                    <span class="ln-activate-step__no">2</span>
+                    <strong>#{t("检查充值账号")}</strong>
+                </div>
+                <label for="lnActivateSession">#{t("账号 Session JSON（敏感信息）")}</label>
+                <textarea id="lnActivateSession" class="ln-activate-session" rows="6"
+                          placeholder="#{t('粘贴完整的 Session JSON')}" spellcheck="false"></textarea>
+                <div class="ln-activate-account-box" aria-live="polite">
+                    <strong>#{t("等待账号信息")}</strong>
+                    <p>#{t("粘贴 Session JSON 后会在本地自动检查邮箱、当前套餐和有效期。")}</p>
+                </div>
+
+                <details class="ln-activate-help">
+                    <summary>#{t("如何获取 ChatGPT 的 Session JSON?")}</summary>
+                    <div class="ln-activate-help__body">
+                        <p>#{t("使用系统浏览器（Safari / Chrome）登录 chatgpt.com，不要使用微信内置浏览器。")}</p>
+                        <p>#{t("新标签页打开")} <a href="https://chatgpt.com/api/auth/session" target="_blank" rel="noopener noreferrer">#{t("ChatGPT Session 页面")}</a>#{t("。")}</p>
+                        <p>#{t("先确认 ChatGPT 已经登录：打开官网必须能直接进入聊天页。如果看到登录或注册页面，请先登录，否则获取的 Session 无效或已过期。")}</p>
+                        <p>#{t("登录成功后重新打开 Session 页面。页面应显示一整段以 { 开头、以 } 结尾的 JSON，而不是登录页面。")}</p>
+                        <p>#{t("全选并复制整段内容：电脑使用 Ctrl/Cmd + A，手机长按全选。不要只复制一部分，也不要通过聊天软件转发后再复制。")}</p>
+                        <p>#{t("完整内容需要包含")} <code>accessToken</code> #{t("或")} <code>sessionToken</code>，#{t("以及")} <code>user_email</code>#{t("。")}</p>
+                        <div class="ln-activate-warn">
+                            #{t("Session 会临时存储于服务端队列，仅用于本次自动充值；建议完成后在 ChatGPT 修改密码并退出所有设备，以失效所有会话。")}
+                        </div>
+                    </div>
+                </details>
+
+                <div class="ln-activate-progress" style="display:none" aria-live="polite"></div>
+            </div>
+
+            <p class="ln-activate-foot">#{t("Session 属于敏感凭证，提交后将临时存储于服务端队列，仅用于本次自动充值。请勿分享给他人。")}</p>
+            <button type="button" class="ln-activate-submit">
+                <i class="fa-duotone fa-regular fa-paper-plane"></i>#{t("确认账号并提交兑换")}
+            </button>
+        </article>
+
+        <aside class="ln-activate-aside">
+            <h2>#{t("兑换前请确认")}</h2>
+            <ul>
+                <li>#{t("卡密仅在 TimLiu AI 页面内兑换，不需要跳转其他站点。")}</li>
+                <li>#{t("只使用你自己的 ChatGPT 账户；官方风控要求手机号或身份验证时，需要由你自行完成。")}</li>
+                <li>#{t("提交后卡密会进入处理队列，请不要重复提交同一张卡。")}</li>
+                <li>#{t("刷新页面会恢复进度：换设备后输入原卡密，点击「验证卡密 / 恢复进度」。")}</li>
+            </ul>
+            <div class="ln-activate-tip">
+                <i class="fa-duotone fa-regular fa-lock-keyhole"></i>
+                <p>#{t("Session 仅临时用于本次自动充值；完成后建议修改密码并退出所有设备。")}</p>
+            </div>
+        </aside>
+    </div>
+</main>
+
+#{ready("/assets/user/controller/index/activate.js")}
+#{include file="./Footer.html"}

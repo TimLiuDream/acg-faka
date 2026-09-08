@@ -11,7 +11,7 @@
     [
     "/assets/common/css/bootstrap.min.css",
     "/assets/common/css/_.css",
-    "/app/View/User/Theme/LiuNeng/assets/theme.css?build=20260908-query-1"
+    "/app/View/User/Theme/LiuNeng/assets/theme.css?build=20260908-query-2"
     ],
     [
     "/assets/common/css/font.min.css",
@@ -21,7 +21,7 @@
     "/assets/common/js/layer/theme/default/layer.css",
     "/assets/common/css/bootstrap.min.css",
     "/assets/common/css/toastr.min.css",
-    "/app/View/User/Theme/LiuNeng/assets/theme.css?build=20260908-query-1"
+    "/app/View/User/Theme/LiuNeng/assets/theme.css?build=20260908-query-2"
     ])}
     #{js("/assets/common/js/ready.js")}
     #{index_var()}
@@ -45,12 +45,13 @@
 
             <div class="collapse navbar-collapse" id="liunengNav">
                 <div class="ln-nav-pill mx-auto">
-                    <a class="#{if $lnPage != 'query'}active#{/if}" href="#{if $lnPage == 'index'}#plans#{else}/#plans#{/if}">#{t("AI 方案")}</a>
+                    <a class="#{if $lnPage == 'index'}active#{/if}" href="#{if $lnPage == 'index'}#plans#{else}/#plans#{/if}">#{t("AI 方案")}</a>
                     #{foreach user_header_nav(['shop' => ['name' => t('全部商品')]]) as $nav}
                         #{if $nav.key != 'shop'}
                             <a class="#{if $lnPage == 'query' && $nav.url == '/user/index/query'}active#{/if}" href="#{$nav.url}" target="#{$nav.target}">#{$nav.name}</a>
                         #{/if}
                     #{/foreach}
+                    <a class="#{if $lnPage == 'activate'}active#{/if}" href="/user/index/activate">#{t("卡密激活")}</a>
                 </div>
             </div>
 

@@ -76,6 +76,7 @@ interface Config
         'INDEX' => 'Index/Index.html',
         'ITEM' => 'Index/Item.html',
         'QUERY' => 'Index/Query.html',
+        'ACTIVATE' => 'Index/Activate.html',
         'LOGIN' => 'Authentication/Login.html',
         'REGISTER' => 'Authentication/Register.html',
         'DASHBOARD' => 'Dashboard/Index.html',

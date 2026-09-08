@@ -768,3 +768,20 @@ CREATE TABLE `__PREFIX__lang` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+DROP TABLE IF EXISTS `__PREFIX__card_redeem`;
+CREATE TABLE `__PREFIX__card_redeem`  (
+                                   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键id',
+                                   `card_id` int UNSIGNED NOT NULL COMMENT '卡密id',
+                                   `account_email` varchar(190) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '充值账号邮箱',
+                                   `account_plan` varchar(190) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '当前套餐',
+                                   `account_expire` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '当前有效期',
+                                   `session_payload` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT 'Session JSON(敏感,仅处理期临时存储)',
+                                   `status` tinyint UNSIGNED NOT NULL DEFAULT 0 COMMENT '状态：0=排队中，1=处理中，2=已完成，3=失败',
+                                   `message` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '处理备注',
+                                   `create_time` datetime NOT NULL COMMENT '提交时间',
+                                   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+                                   PRIMARY KEY (`id`) USING BTREE,
+                                   UNIQUE INDEX `uk_card_id`(`card_id` ASC) USING BTREE,
+                                   INDEX `idx_status`(`status` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT=1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
