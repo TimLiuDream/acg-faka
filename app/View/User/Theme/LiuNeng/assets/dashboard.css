@@ -153,8 +153,6 @@
 .ln-dashboard-button:hover { transform: translateY(-2px); }
 .ln-dashboard-button--primary { border-color: var(--ln-blue); background: var(--ln-blue); color: #fff; }
 .ln-dashboard-button--primary:hover { color: #fff; box-shadow: 0 10px 25px rgba(20, 108, 255, .28); }
-.ln-dashboard-button--secondary { background: var(--ln-surface); color: var(--ln-ink); }
-.ln-dashboard-button--secondary:hover { background: var(--ln-soft); color: var(--ln-ink); }
 
 .ln-wallet {
     position: relative;
@@ -386,7 +384,6 @@
 .ln-business-status strong small { color: rgba(255,255,255,.42); font-size: 10px; }
 
 :root[data-theme] .ln-orders-panel { margin-top: 64px; }
-.ln-dashboard-panel__head .ln-orders-panel__all { display: inline-flex; align-items: center; justify-content: center; width: auto !important; min-width: 96px; height: 38px; padding: 0 15px; white-space: nowrap; }
 .ln-orders-panel__table { overflow-x: auto; padding: 8px 20px 20px; }
 .ln-orders-panel__table .bootstrap-table { min-width: 980px; }
 
@@ -404,8 +401,8 @@
     .ln-dashboard-identity__avatar { width: 52px; height: 52px; flex-basis: 52px; border-width: 3px; border-radius: 17px; }
     .ln-dashboard-hero h1 { font-size: 34px; line-height: 1.08; }
     .ln-dashboard-hero__intro > p { margin-top: 18px; font-size: 13px; }
-    .ln-dashboard-hero__actions { display: grid; grid-template-columns: 1fr 1fr; width: 100%; margin-top: 22px; }
-    .ln-dashboard-button { gap: 10px; padding: 0 14px; }
+    .ln-dashboard-hero__actions { width: 100%; margin-top: 22px; }
+    .ln-dashboard-button { width: 100%; gap: 10px; padding: 0 14px; }
     .ln-wallet { min-height: 286px; padding: 23px; border-radius: 19px; }
     .ln-dashboard-section, .ln-dashboard-grid, :root[data-theme] .ln-orders-panel { margin-top: 42px; }
     .ln-dashboard-section__head h2, .ln-dashboard-panel__head h2 { font-size: 23px; }
@@ -430,7 +427,6 @@
     .ln-business__metrics article:nth-last-child(-n+2) { border-bottom: 0; }
     .ln-business__body { gap: 26px; }
     .ln-orders-panel__table { padding: 4px 10px 14px; }
-    .ln-dashboard-panel__head .ln-orders-panel__all { min-width: 0; height: 34px; padding: 0 12px; font-size: 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
