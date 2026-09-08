@@ -38,6 +38,14 @@ body.ln-body {
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
 }
+body.ln-page-activate {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+.ln-page-activate > .ln-activate-page { flex: 1 0 auto; }
+.ln-page-activate > .ln-footer { flex: 0 0 auto; margin-top: auto; }
 .ln-body a { color: inherit; text-decoration: none; }
 .ln-body .container { max-width: 1160px; }
 
