@@ -103,22 +103,6 @@
     box-shadow: 0 10px 32px rgba(20, 108, 255, .18);
 }
 
-.ln-dashboard-identity__level {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 6px;
-    color: var(--ln-blue);
-    font-size: 12px;
-    font-weight: 750;
-}
-
-.ln-dashboard-identity__level img {
-    width: 16px;
-    height: 16px;
-    object-fit: contain;
-}
-
 .ln-dashboard-hero h1 {
     max-width: 700px;
     margin: 0;
