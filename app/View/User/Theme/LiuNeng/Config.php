@@ -8,8 +8,8 @@ use App\Consts\Render;
 interface Config
 {
     public const INFO = [
-        'NAME' => 'LiuNeng Labs',
-        'AUTHOR' => 'LiuNeng Labs',
+        'NAME' => 'Dreamer Labs',
+        'AUTHOR' => 'TimLiu',
         'VERSION' => '0.1.0',
         'WEB_SITE' => '#',
         'DESCRIPTION' => '面向 AI 会员与数字服务的清爽品牌主题',
