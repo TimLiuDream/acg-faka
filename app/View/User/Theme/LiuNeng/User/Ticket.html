@@ -1,0 +1,108 @@
+#{include file="../../Cartoon/Common/Header.html"}
+<link rel="stylesheet" href="/app/View/User/Theme/LiuNeng/assets/ticket.css?build=20260908-ticket-1">
+
+<main class="uc-main uc-ticket-page ln-ticket-page">
+    <section class="ln-ticket-hero">
+        <div class="ln-ticket-hero__copy">
+            <span class="ln-ticket-eyebrow">SUPPORT DESK</span>
+            <h1>#{t("我的工单")}</h1>
+            <p>#{t("购买前有疑问，或购买后需要帮助，都可以在这里和客服持续沟通。")}</p>
+        </div>
+        <a class="uc-ticket-primary ln-ticket-create" href="/user/ticket/create">
+            <span class="ln-ticket-create__index">01</span>
+            <span class="ln-ticket-create__copy">
+                <small>#{t("通常很快会收到回复")}</small>
+                <strong>#{t("创建工单")}</strong>
+            </span>
+            <span class="material-icons-outlined ln-ticket-create__arrow">arrow_forward</span>
+        </a>
+    </section>
+
+    <section class="ln-ticket-overview" aria-label="#{t('工单状态概览')}">
+        <header class="ln-ticket-overview__head">
+            <span class="ln-ticket-eyebrow">STATUS OVERVIEW</span>
+            <strong>#{t("工单状态概览")}</strong>
+        </header>
+        <div class="uc-ticket-stats">
+            <button type="button" class="uc-ticket-stat is-active" data-status="">
+                <span class="uc-ticket-stat__index">01</span>
+                <span class="uc-ticket-stat__copy"><small>#{t("全部工单")}</small><strong data-stat="all">0</strong></span>
+                <span class="material-icons-outlined uc-ticket-stat__arrow">arrow_outward</span>
+            </button>
+            <button type="button" class="uc-ticket-stat" data-status="0">
+                <span class="uc-ticket-stat__index">02</span>
+                <span class="uc-ticket-stat__copy"><small>#{t("待客服回复")}</small><strong data-stat="pending_admin">0</strong></span>
+                <span class="material-icons-outlined uc-ticket-stat__arrow">schedule</span>
+            </button>
+            <button type="button" class="uc-ticket-stat" data-status="1">
+                <span class="uc-ticket-stat__index">03</span>
+                <span class="uc-ticket-stat__copy"><small>#{t("待我回复")}</small><strong data-stat="pending_user">0</strong></span>
+                <span class="material-icons-outlined uc-ticket-stat__arrow">mark_chat_unread</span>
+            </button>
+            <button type="button" class="uc-ticket-stat" data-status="2">
+                <span class="uc-ticket-stat__index">04</span>
+                <span class="uc-ticket-stat__copy"><small>#{t("已经解决")}</small><strong data-stat="resolved">0</strong></span>
+                <span class="material-icons-outlined uc-ticket-stat__arrow">task_alt</span>
+            </button>
+            <button type="button" class="uc-ticket-stat" data-status="3">
+                <span class="uc-ticket-stat__index">05</span>
+                <span class="uc-ticket-stat__copy"><small>#{t("已经关闭")}</small><strong data-stat="closed">0</strong></span>
+                <span class="material-icons-outlined uc-ticket-stat__arrow">lock</span>
+            </button>
+        </div>
+    </section>
+
+    <section class="uc-card uc-ticket-board ln-ticket-board">
+        <div class="uc-ticket-toolbar">
+            <div class="uc-ticket-toolbar__title">
+                <div>
+                    <span class="ln-ticket-eyebrow">TICKET ARCHIVE</span>
+                    <strong>#{t("工单记录")}</strong>
+                    <small>#{t("点击任意工单即可查看完整沟通记录")}</small>
+                </div>
+            </div>
+            <div class="uc-ticket-tools">
+                <label class="uc-ticket-search">
+                    <span class="material-icons-outlined">search</span>
+                    <input type="search" name="ticket-keyword" placeholder="#{t('搜索工单号或标题')}" autocomplete="off">
+                    <button type="button" class="uc-ticket-search__clear" aria-label="#{t('清空搜索')}"><span class="material-icons-outlined">close</span></button>
+                </label>
+                <label class="uc-ticket-select">
+                    <span class="uc-ticket-select__label">#{t("类型")}</span>
+                    <select name="ticket-type" aria-label="#{t('按工单类型筛选')}">
+                        <option value="">#{t("全部类型")}</option>
+                        <option value="0">#{t("售前咨询")}</option>
+                        <option value="1">#{t("售后支持")}</option>
+                    </select>
+                    <span class="material-icons-outlined">expand_more</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="uc-ticket-loading" aria-live="polite">
+            <div class="uc-ticket-skeleton"></div>
+            <div class="uc-ticket-skeleton"></div>
+            <div class="uc-ticket-skeleton"></div>
+        </div>
+        <div class="uc-ticket-list" aria-live="polite"></div>
+        <div class="uc-ticket-empty" hidden>
+            <span class="uc-ticket-empty__art"><span class="material-icons-outlined">mark_chat_read</span></span>
+            <strong>#{t("这里还没有工单")}</strong>
+            <p>#{t("遇到疑问时，不必反复寻找客服入口，创建一张工单就能持续跟进。")}</p>
+            <a href="/user/ticket/create"><span class="material-icons-outlined">add</span>#{t("创建第一张工单")}</a>
+        </div>
+        <div class="uc-ticket-error" hidden>
+            <span class="material-icons-outlined">cloud_off</span>
+            <div><strong>#{t("暂时无法读取工单")}</strong><small>#{t("请检查网络后再试一次")}</small></div>
+            <button type="button">#{t("重新加载")}</button>
+        </div>
+        <div class="uc-ticket-pagination" hidden>
+            <button type="button" data-page-action="prev"><span class="material-icons-outlined">chevron_left</span>#{t("上一页")}</button>
+            <span class="uc-ticket-pagination__meta"></span>
+            <button type="button" data-page-action="next">#{t("下一页")}<span class="material-icons-outlined">chevron_right</span></button>
+        </div>
+    </section>
+</main>
+
+#{ready("/assets/user/controller/user/ticket.js")}
+#{include file="../../Cartoon/Common/Footer.html"}

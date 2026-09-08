@@ -81,6 +81,7 @@ interface Config
         'REGISTER' => 'Authentication/Register.html',
         'DASHBOARD' => 'Dashboard/Index.html',
         'PERSONAL' => 'User/Personal.html',
+        'TICKET' => 'User/Ticket.html',
         'PASSWORD' => 'User/Personal.html',
         'EMAIL' => 'User/Personal.html',
         'PHONE' => 'User/Personal.html',
