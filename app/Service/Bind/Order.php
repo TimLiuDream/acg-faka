@@ -28,6 +28,7 @@ use App\Util\PayConfig;
 use App\Util\PayFactory;
 use App\Util\PayProfile;
 use App\Util\Str;
+use App\Util\Theme;
 use Illuminate\Database\Capsule\Manager as DB;
 use Kernel\Annotation\Inject;
 use Kernel\Container\Di;
@@ -473,13 +474,13 @@ class Order implements \App\Service\Order
 
     public function trade(?User $user, ?UserGroup $userGroup, array $map): array
     {
-        $commodityId = (int)$map['item_id'];
-        $contact = (string)$map['contact'];
+        $commodityId = (int)($map['item_id'] ?? 0);
+        $contact = trim((string)($map['contact'] ?? ''));
         $num = (int)$map['num'];
         $cardId = (int)$map['card_id'];
         $payId = (int)$map['pay_id'];
         $device = (int)$map['device'];
-        $password = (string)$map['password'];
+        $password = (string)($map['password'] ?? '');
         $coupon = (string)$map['coupon'];
         $from = $_COOKIE['promotion_from'] ?? 0;
         $owner = $user == null ? 0 : $user->id;
@@ -551,8 +552,9 @@ class Order implements \App\Service\Order
         $msg = ['手机', '邮箱', 'QQ号'];
 
         $shopService = Di::inst()->make(\App\Service\Shop::class);
+        $requiresLookupCredentials = strcasecmp(Theme::activeIndexTheme(), 'LiuNeng') === 0;
 
-        if (!$user) {
+        if (!$user || $requiresLookupCredentials) {
             if (mb_strlen($contact) < 3) {
                 throw new JSONException("联系方式不能低于3个字符");
             }
@@ -562,7 +564,7 @@ class Order implements \App\Service\Order
                     throw new JSONException("您输入的{$msg[$commodity->contact_type - 1]}格式不正确！");
                 }
             }
-            if ($commodity->password_status == 1 && mb_strlen($password) < 6) {
+            if (($commodity->password_status == 1 || $requiresLookupCredentials) && mb_strlen($password) < 6) {
                 throw new JSONException("您的设置的密码过于简单，不能低于6位哦");
             }
         }
@@ -688,7 +690,7 @@ class Order implements \App\Service\Order
         }
 
         DB::connection()->getPdo()->exec("set session transaction isolation level serializable");
-        $result = Db::transaction(function () use ($commodity, $rent, $rebate, $divideAmount, $business, $sku, $requestNo, $user, $userGroup, $num, $contact, $device, $amount, $owner, $pay, $cardId, $password, $coupon, $from, $widget, $race, $callbackDomain, $clientDomain) {
+        $result = Db::transaction(function () use ($commodity, $rent, $rebate, $divideAmount, $business, $sku, $requestNo, $user, $userGroup, $num, $contact, $device, $amount, $owner, $pay, $cardId, $password, $coupon, $from, $widget, $race, $callbackDomain, $clientDomain, $requiresLookupCredentials) {
             $lockedCommodity = $this->lockCommodityForOrder($commodity);
 
             if ((int)$lockedCommodity->status !== 1) {
@@ -724,7 +726,7 @@ class Order implements \App\Service\Order
                 }
             }
 
-            if ($user) {
+            if ($user && !$requiresLookupCredentials) {
                 $contact = Str::generateRandStr(16);
             }
 

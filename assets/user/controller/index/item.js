@@ -209,6 +209,21 @@
         });
     }
 
+    function _RegisterPasswordToggle() {
+        $('.ln-password-toggle').click(function () {
+            const $button = $(this);
+            const $input = $button.siblings('input[name=password]');
+            const shouldShow = $input.attr('type') === 'password';
+
+            $input.attr('type', shouldShow ? 'text' : 'password');
+            $button.attr({
+                'aria-label': shouldShow ? $button.data('hide-label') : $button.data('show-label'),
+                'aria-pressed': shouldShow ? 'true' : 'false'
+            });
+            $button.find('i').toggleClass('fa-eye', !shouldShow).toggleClass('fa-eye-slash', shouldShow);
+        });
+    }
+
     function _SetPayList() {
         const $payList = $(`.pay-list`);
         util.post({
@@ -222,6 +237,11 @@
         });
 
         $(document).on("click", `.pay-list .pay`, function () {
+            const form = $vstack.get(0);
+            if (form && !form.reportValidity()) {
+                return;
+            }
+
             let post = _getPostData();
             post["pay_id"] = $(this).data("id");
             util.post("/user/api/order/trade", post, res => {
@@ -343,6 +363,7 @@
     //支付方式
     _SetPayList();
     _RegisterCaptchaRefresh();
+    _RegisterPasswordToggle();
     _OptionalCard();
 
     _ShareItem();

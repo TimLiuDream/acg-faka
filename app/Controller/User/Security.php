@@ -19,7 +19,9 @@ class Security extends User
      */
     public function personal(): string
     {
-        return $this->theme("个人资料", "PERSONAL", "User/Personal.html");
+        return $this->theme("个人资料", "PERSONAL", "User/Personal.html", [
+            'security_section' => 'profile',
+        ]);
     }
 
     /**
@@ -27,7 +29,9 @@ class Security extends User
      */
     public function email(): string
     {
-        return $this->theme("邮箱设置", "EMAIL", "User/Email.html");
+        return $this->theme("邮箱设置", "EMAIL", "User/Email.html", [
+            'security_section' => 'email',
+        ]);
     }
 
     /**
@@ -35,7 +39,9 @@ class Security extends User
      */
     public function phone(): string
     {
-        return $this->theme("手机设置", "PHONE", "User/Phone.html");
+        return $this->theme("手机设置", "PHONE", "User/Phone.html", [
+            'security_section' => 'phone',
+        ]);
     }
 
     /**
@@ -44,6 +50,8 @@ class Security extends User
      */
     public function password(): string
     {
-        return $this->theme("密码设置", "PASSWORD", "User/Password.html");
+        return $this->theme("密码设置", "PASSWORD", "User/Password.html", [
+            'security_section' => 'password',
+        ]);
     }
 }

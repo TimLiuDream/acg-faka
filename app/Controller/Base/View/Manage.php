@@ -27,7 +27,10 @@ abstract class Manage extends \App\Controller\Base\Manage
                 $data["config"][$k] = $v;
             }
 
-            $faviconVersion = filemtime(BASE_PATH . '/assets/cache/favicon.ico') ?: time();
+            $faviconFile = is_file(BASE_PATH . '/assets/cache/favicon.ico')
+                ? BASE_PATH . '/assets/cache/favicon.ico'
+                : BASE_PATH . '/favicon.ico';
+            $faviconVersion = @filemtime($faviconFile) ?: time();
             $data['favicon'] = '/favicon.ico?v=' . rawurlencode((string)$faviconVersion);
 
             if (Client::isMobile() && $data['config']['background_mobile_url']) {

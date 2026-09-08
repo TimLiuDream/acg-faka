@@ -1,0 +1,201 @@
+#{assign var="lnPage" value="index"}
+#{include file="./Header.html"}
+#{item_var($item)}
+<link rel="stylesheet" href="/app/View/User/Theme/LiuNeng/assets/item.css?build=20260908-lookup-2">
+
+<main class="ln-item-page">
+    <section class="ln-item-intro">
+        <div class="container">
+            <a class="ln-item-back" href="/">
+                <i class="fa-duotone fa-regular fa-arrow-left"></i>
+                <span>#{t("返回全部方案")}</span>
+            </a>
+            <div class="ln-kicker">CHECKOUT</div>
+            <div class="ln-item-intro-copy">
+                <h1><span>#{t("确认方案，")}</span><span>#{t("完成下单。")}</span></h1>
+                <p>#{t("确认商品内容与交付信息，然后选择支付方式完成下单。")}</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="ln-item-checkout">
+        <div class="container ln-item-layout">
+            <article class="ln-item-product">
+                <div class="ln-item-cover-wrap">
+                    <img src="#{$item.cover}" alt="#{lang($item.name)}" class="item-cover">
+                    <span class="ln-item-cover-index">PRODUCT / #{$item.id}</span>
+                </div>
+
+                <div class="ln-item-product-copy">
+                    <div class="ln-item-title-row">
+                        <div>
+                            <span class="ln-item-label">SELECTED PLAN</span>
+                            <h2>#{lang($item.name)}</h2>
+                        </div>
+                        <button class="shared-button" type="button" aria-label="#{t('分享')}">
+                            <i class="fa-duotone fa-regular fa-arrow-up-from-bracket"></i>
+                            <span>#{t("分享")}</span>
+                        </button>
+                    </div>
+
+                    <div class="ln-item-badges">
+                        #{if $item.seckill_status == 1}<span class="ln-item-badge snap-up" style="display:none"></span>#{/if}
+                        <span class="ln-item-badge ln-item-badge--delivery">
+                            <i class="fa-duotone fa-regular fa-bolt"></i>
+                            #{if $item.delivery_way == 0}#{t("自动发货")}#{else}#{t("在线发货")}#{/if}
+                        </span>
+                        <span class="ln-item-badge">#{t("已售")} #{$item.order_sold}</span>
+                        <span class="ln-item-badge item-stock">#{t("库存")} #{$item.stock}</span>
+                    </div>
+
+                    <div class="ln-item-price abacus">
+                        <span>#{t("当前价格")}</span>
+                        <div class="price"><i class="fa-duotone fa-regular fa-spinner-third icon-spin"></i></div>
+                        <small>#{t("根据所选规格与数量实时计算")}</small>
+                    </div>
+                </div>
+            </article>
+
+            <article class="ln-checkout-card">
+                <div class="ln-checkout-head">
+                    <span class="ln-item-label">ORDER DETAILS</span>
+                    <h2>#{t("填写订单信息")}</h2>
+                    <p>#{t("只提交完成本次订单所需的信息。")}</p>
+                </div>
+
+                <form method="post" class="vstack ln-checkout-form">
+                    #{if !empty($item.config.category)}
+                    <div class="ln-item-field">
+                        <label>#{t("宝贝类型")}</label>
+                        <div class="sku-list">
+                            #{foreach $item.config.category as $race => $price}
+                            <a class="switch-race sku #{if $price@first}is-primary#{/if}"
+                               data-sku="#{$race|escape:'html'}" data-price="#{$price}"
+                               href="javascript:void(0);">
+                                <span>#{lang($race)}</span>
+                                <small>#{$config.currency_symbol}#{$price}</small>
+                            </a>
+                            #{/foreach}
+                        </div>
+                    </div>
+                    #{/if}
+
+                    #{if !empty($item.config.sku)}
+                    #{foreach $item.config.sku as $name => $sku}
+                    <div class="ln-item-field">
+                        <label>#{lang($name)}</label>
+                        <div class="sku-list">
+                            #{foreach $sku as $key => $price}
+                            <a class="switch-sku sku #{if $price@first}is-primary#{/if}"
+                               data-sku="#{$name|escape:'html'}" data-value="#{$key|escape:'html'}"
+                               data-price="#{$price}" href="javascript:void(0);">
+                                <span>#{lang($key)}</span>
+                                #{if $price > 0}<small>+#{$config.currency_symbol}#{$price}</small>#{/if}
+                            </a>
+                            #{/foreach}
+                        </div>
+                    </div>
+                    #{/foreach}
+                    #{/if}
+
+                    #{if $item.draft_status == 1}
+                    <div class="ln-item-field">
+                        <input type="hidden" name="card_id" class="form-control">
+                        <label>#{t("自选账号")}</label>
+                        <button type="button" class="optional-card">#{t("未自选,将随机发货")}</button>
+                    </div>
+                    #{/if}
+
+                    <div class="ln-item-field">
+                        <label>#{contact_type_msg($item.contact_type)} <em>#{t("必填")}</em></label>
+                        <input type="text" name="contact" class="form-control" minlength="3" required
+                               autocomplete="off"
+                               placeholder="#{t('请输入您的')}#{contact_type_msg($item.contact_type)}">
+                        <small class="ln-item-help">
+                            <i class="fa-duotone fa-regular fa-magnifying-glass"></i>
+                            #{t("联系方式用于查询此订单。")}
+                        </small>
+                    </div>
+
+                    #{if $item.coupon == 1}
+                    <div class="ln-item-field">
+                        <label>#{t("优惠券")}</label>
+                        <input type="text" class="form-control" name="coupon"
+                               placeholder="#{t('优惠券代码，没有则不填')}">
+                    </div>
+                    #{/if}
+
+                    <div class="ln-item-widget">#{widget_render($item.widget)}</div>
+
+                    <div class="ln-item-field">
+                        <label>#{t("查询密码")} <em>#{t("必填")}</em></label>
+                        <div class="ln-password-control">
+                            <input type="password" class="form-control" name="password" minlength="6" required
+                                   autocomplete="new-password"
+                                   placeholder="#{t('设置查询订单的密码')}">
+                            <button type="button" class="ln-password-toggle"
+                                    aria-label="#{t('显示密码')}" aria-pressed="false"
+                                    data-show-label="#{t('显示密码')}" data-hide-label="#{t('隐藏密码')}">
+                                <i class="fa-duotone fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                        <small class="ln-item-help">
+                            <i class="fa-duotone fa-regular fa-key"></i>
+                            #{t("查询密码用于付款后查看卡密。")}
+                        </small>
+                    </div>
+
+                    <div class="ln-item-field">
+                        <label>#{t("购买数量")}</label>
+                        <div class="qty-group">
+                            <button type="button" class="change-num-sub" aria-label="#{t('减少数量')}">−</button>
+                            <input type="number" class="form-control text-center" name="num"
+                                   value="#{if $item.minimum > 0}#{$item.minimum}#{else}1#{/if}">
+                            <button type="button" class="change-num-add" aria-label="#{t('增加数量')}">＋</button>
+                        </div>
+                    </div>
+
+                    #{if $item.trade_captcha == 1}
+                    <div class="ln-item-field">
+                        <label>#{t("人机验证")}</label>
+                        <div class="ln-item-captcha">
+                            <input type="text" class="form-control captcha-input" name="captcha"
+                                   placeholder="#{t('图形验证码')}">
+                            <img class="captcha-img" src="/user/captcha/image?action=trade" alt="#{t('图形验证码')}">
+                        </div>
+                    </div>
+                    #{/if}
+
+                    <div class="cash-pay" style="display:none">
+                        <div class="ln-pay-head">
+                            <span>#{t("选择支付方式")}</span>
+                            <small>#{t("选择一种可用的支付方式完成下单。")}</small>
+                        </div>
+                        <div class="pay-list"></div>
+                    </div>
+                </form>
+
+                <div class="ln-checkout-note">
+                    <i class="fa-duotone fa-regular fa-shield-check"></i>
+                    <span>#{t("支付与订单信息将按当前选择实时更新。")}</span>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="ln-item-description">
+        <div class="container ln-item-description-grid">
+            <div class="ln-item-description-title">
+                <span class="ln-item-label">DETAILS</span>
+                <h2>#{t("商品说明")}</h2>
+                <p>#{t("购买前请确认服务范围和交付说明。")}</p>
+            </div>
+            <article class="item-detail">
+                #{lang($item.description)}
+            </article>
+        </div>
+    </section>
+</main>
+
+#{ready("/assets/user/controller/index/item.js?build=20260908-lookup-2")}
+#{include file="./Footer.html"}

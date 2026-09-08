@@ -11,6 +11,21 @@ class Theme
 {
 
     /**
+     * Return the storefront theme selected for the current device.
+     */
+    public static function activeIndexTheme(): string
+    {
+        $desktopTheme = (string)\App\Model\Config::get("user_theme");
+
+        if (!Client::isMobile()) {
+            return $desktopTheme;
+        }
+
+        $mobileTheme = (string)\App\Model\Config::get("user_mobile_theme");
+        return $mobileTheme === '' || $mobileTheme === '0' ? $desktopTheme : $mobileTheme;
+    }
+
+    /**
      * @param string $name
      * @return array|null
      */

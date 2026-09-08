@@ -257,6 +257,7 @@
     position: relative;
     margin-top: 26px;
     padding: 30px;
+    scroll-margin-top: 92px;
     overflow: hidden;
     border: 1px solid var(--ln-line);
     border-radius: 24px;
@@ -483,43 +484,7 @@
     border-top: 1px solid var(--ln-line);
 }
 
-/* ===== 安全子页导航 ===== */
-.ln-sec-tabs {
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    max-width: 100%;
-    padding: 6px;
-    border: 1px solid var(--ln-line);
-    border-radius: 16px;
-    background: var(--ln-surface);
-    box-shadow: var(--ln-shadow);
-}
-
-.ln-sec-tabs a {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 9px 16px;
-    border-radius: 11px;
-    color: var(--ln-muted);
-    font-size: 13px;
-    font-weight: 700;
-    white-space: nowrap;
-    transition: background-color .18s ease, color .18s ease;
-}
-
-.ln-sec-tabs a .material-icons-outlined { font-size: 16px; }
-
-.ln-sec-tabs a:hover { background: var(--ln-soft); color: var(--ln-ink); }
-
-.ln-sec-tabs a.active { background: var(--ln-blue); color: #fff; }
-
 /* ===== 面板修饰 ===== */
-.ln-sec-panel--narrow {
-    max-width: 760px;
-}
-
 .ln-sec-form__grid--single {
     grid-template-columns: 1fr;
     gap: 18px;
@@ -563,10 +528,6 @@
     .ln-sec-login { padding: 22px; border-radius: 19px; }
 
     .ln-sec-panel { padding: 24px 20px; border-radius: 19px; }
-
-    .ln-sec-tabs { display: flex; }
-
-    .ln-sec-tabs a { flex: 1 1 auto; justify-content: center; padding: 9px 12px; }
 
     .ln-sec-form__grid { grid-template-columns: 1fr; }
 

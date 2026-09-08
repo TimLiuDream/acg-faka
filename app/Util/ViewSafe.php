@@ -60,11 +60,17 @@ final class ViewSafe
             }
 
             $data[$key] = self::text(
-                in_array((string)$key, self::URL_KEYS, true) ? self::url($value) : $value
+                self::isUrlKey((string)$key) ? self::url($value) : $value
             );
         }
 
         return $data;
+    }
+
+    private static function isUrlKey(string $key): bool
+    {
+        return in_array($key, self::URL_KEYS, true)
+            || str_ends_with($key, '_url');
     }
 
     private static function ownerHtml(string $path, string $key): bool

@@ -1,0 +1,26 @@
+:root[data-theme] {
+    scrollbar-color: var(--uc-ink-dis, #8b909e) transparent;
+    scrollbar-width: thin;
+}
+
+:root[data-theme] ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+:root[data-theme] ::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+:root[data-theme] ::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background: rgba(var(--md-primary-rgb, 31, 39, 51), .24);
+    background-clip: padding-box;
+}
+
+:root[data-theme] ::-webkit-scrollbar-thumb:hover,
+:root[data-theme] ::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(var(--md-primary-rgb, 31, 39, 51), .42);
+    background-clip: padding-box;
+}

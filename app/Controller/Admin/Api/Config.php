@@ -279,19 +279,39 @@ class Config extends Manage
         }
 
         $favicon = BASE_PATH . '/assets/cache/favicon.ico';
-        try {
-            $temporary = $favicon . '.setting-' . bin2hex(random_bytes(6));
-        } catch (\Throwable $e) {
-            throw new JSONException('无法创建安全的 LOGO 临时文件');
-        }
-        if (!copy($source, $temporary)) {
-            throw new JSONException('LOGO 保存失败，请检查目录权限');
-        }
-        if (!rename($temporary, $favicon)) {
-            @unlink($temporary);
-            throw new JSONException('LOGO 保存失败，请检查目录权限');
+        $targets = [$favicon];
+        $rootFavicon = BASE_PATH . '/favicon.ico';
+        if (!is_link($rootFavicon)) {
+            $targets[] = $rootFavicon;
         }
 
+        $temporaryFiles = [];
+        try {
+            foreach ($targets as $target) {
+                $temporary = $target . '.setting-' . bin2hex(random_bytes(6));
+                if (!copy($source, $temporary)) {
+                    throw new JSONException('LOGO 保存失败，请检查目录权限');
+                }
+                $temporaryFiles[$target] = $temporary;
+            }
+        } catch (\Throwable $e) {
+            foreach ($temporaryFiles as $temporary) {
+                @unlink($temporary);
+            }
+            if ($e instanceof JSONException) {
+                throw $e;
+            }
+            throw new JSONException('无法创建安全的 LOGO 临时文件');
+        }
+
+        foreach ($temporaryFiles as $target => $temporary) {
+            if (!rename($temporary, $target)) {
+                foreach ($temporaryFiles as $cleanup) {
+                    @unlink($cleanup);
+                }
+                throw new JSONException('LOGO 保存失败，请检查目录权限');
+            }
+        }
     }
 
     public function logo(Request $request): array

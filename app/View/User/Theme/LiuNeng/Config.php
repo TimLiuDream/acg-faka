@@ -74,13 +74,14 @@ interface Config
 
     public const THEME = [
         'INDEX' => 'Index/Index.html',
+        'ITEM' => 'Index/Item.html',
         'QUERY' => 'Index/Query.html',
         'LOGIN' => 'Authentication/Login.html',
         'REGISTER' => 'Authentication/Register.html',
         'DASHBOARD' => 'Dashboard/Index.html',
         'PERSONAL' => 'User/Personal.html',
-        'PASSWORD' => 'User/Password.html',
-        'EMAIL' => 'User/Email.html',
-        'PHONE' => 'User/Phone.html',
+        'PASSWORD' => 'User/Personal.html',
+        'EMAIL' => 'User/Personal.html',
+        'PHONE' => 'User/Personal.html',
     ];
 }

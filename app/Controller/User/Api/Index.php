@@ -19,6 +19,7 @@ use App\Service\Query;
 use App\Service\Shared;
 use App\Service\Shop;
 use App\Util\Client;
+use App\Util\Theme;
 use App\Util\Throttle;
 use App\Util\Tree;
 use Illuminate\Database\Eloquent\Builder;
@@ -411,7 +412,7 @@ class Index extends User
 
         $let = "(`equipment`=0 or `equipment`={$equipment})";
 
-        if (!$this->getUser()) {
+        if (!$this->getUser() || strcasecmp(Theme::activeIndexTheme(), 'LiuNeng') === 0) {
             $let .= " and id!=1";
         }
 

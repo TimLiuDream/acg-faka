@@ -1,7 +1,7 @@
 #{include file="../../Cartoon/Common/Header.html"}
 <link rel="stylesheet" href="/app/View/User/Theme/LiuNeng/assets/security.css?build=20260908-security-4">
 
-<main class="uc-main ln-security">
+<main class="uc-main ln-security" data-security-section="#{$security_section}">
     <section class="ln-sec-hero">
         <div class="ln-sec-hero__intro">
             <span class="ln-sec-eyebrow">ACCOUNT</span>
@@ -56,7 +56,7 @@
         </aside>
     </section>
 
-    <section class="ln-sec-panel uc-card" id="ln-profile-panel" aria-labelledby="ln-profile-title">
+    <section class="ln-sec-panel uc-card" id="ln-profile-panel" data-section="profile" aria-labelledby="ln-profile-title">
         <div class="ln-sec-panel__head">
             <div>
                 <span class="ln-sec-eyebrow">PROFILE</span>
@@ -135,7 +135,7 @@
         </form>
     </section>
 
-    <section class="ln-sec-panel uc-card" aria-labelledby="ln-password-title">
+    <section class="ln-sec-panel uc-card" data-section="password" aria-labelledby="ln-password-title">
         <div class="ln-sec-panel__head">
             <div>
                 <span class="ln-sec-eyebrow">SECURITY</span>
@@ -172,7 +172,7 @@
     </section>
 
     #{if $config.registered_type == 2}
-    <section class="ln-sec-panel uc-card" aria-labelledby="ln-email-title">
+    <section class="ln-sec-panel uc-card" data-section="email" aria-labelledby="ln-email-title">
         <div class="ln-sec-panel__head">
             <div>
                 <span class="ln-sec-eyebrow">SECURITY</span>
@@ -215,7 +215,7 @@
     #{/if}
 
     #{if $config.registered_type == 1}
-    <section class="ln-sec-panel uc-card" aria-labelledby="ln-phone-title">
+    <section class="ln-sec-panel uc-card" data-section="phone" aria-labelledby="ln-phone-title">
         <div class="ln-sec-panel__head">
             <div>
                 <span class="ln-sec-eyebrow">SECURITY</span>

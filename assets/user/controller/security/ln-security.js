@@ -5,6 +5,15 @@
 
     const $form = panel => $('form[data-panel="' + panel + '"]');
 
+    // 旧地址继续可用，但 LiuNeng 统一渲染本页并定位到对应设置区块。
+    const initialSection = $('.ln-security').data('security-section');
+    if (initialSection && initialSection !== 'profile') {
+        const section = document.querySelector('[data-section="' + initialSection + '"]');
+        if (section) {
+            requestAnimationFrame(() => section.scrollIntoView({block: 'start'}));
+        }
+    }
+
     // ===== 头像上传 =====
     util.bindButtonUpload(".avatar-input", "/user/api/upload/send?mime=image", result => {
         $('input[name=avatar]').val(result.url);
@@ -23,22 +32,22 @@
         $('input[name=wechat]').val(result.url);
         $('.wx_qrcode').html('<img class="wechat-img" src="' + result.url + '" style="width: 100px;cursor: pointer;" data-acg-proxy=".wechat-input">');
         $('.wx_qrcode_temp').html('<img class="wechat-img" src="' + result.url + '" style="width: 100px;cursor: pointer;" data-acg-proxy=".wechat-input">');
-        message.success("上传完成，需要保存才会生效哦");
+        message.success(i18n("上传完成，需要保存才会生效哦"));
     });
 
     // ===== 修改个人信息 =====
     $('[data-save="profile"]').click(function () {
         util.post("/user/api/security/personal", util.getFormData($form('profile')[0]), () => {
-            message.success("已生效");
+            message.success(i18n("已生效"));
         });
     });
 
     // ===== 重置商户密钥 =====
     $('.reset-key').click(function () {
-        message.ask("是否要重置您的密钥？", () => {
+        message.ask(i18n("是否要重置您的密钥？"), () => {
             util.post('/user/api/security/resetKey', res => {
                 $('.app-key').html(res.data.app_key);
-                message.success("密钥已重置");
+                message.success(i18n("密钥已重置"));
             });
         });
     });
@@ -46,7 +55,7 @@
     // ===== 密码设置 =====
     $('[data-save="password"]').click(function () {
         util.post("/user/api/security/password", util.getFormData($form('password')[0]), () => {
-            message.success("修改成功");
+            message.success(i18n("修改成功"));
             setTimeout(() => {
                 window.location.reload();
             }, 1500);
@@ -60,11 +69,11 @@
         const field = action === 'phoneBindNew' ? 'phone' : 'email';
         const target = $form(field === 'phone' ? 'phone' : 'email').find('input[name=' + field + ']').val();
         if (!target) {
-            message.error(field === 'phone' ? "请先输入新手机号" : "请先输入新邮箱");
+            message.error(i18n(field === 'phone' ? "请先输入新手机号" : "请先输入新邮箱"));
             return;
         }
         message.prompt({
-            title: '人机验证',
+            title: i18n('人机验证'),
             width: 420,
             html: `<img src="/user/captcha/image?action=${action}" data-acg-refresh="/user/captcha/image?action=${action}" class="prompt-image-code" alt="${i18n('更换验证码')}">`,
             inputAttributes: {
@@ -82,7 +91,7 @@
                     [field]: target
                 }, () => {
                     util.countDown($btn, 60);
-                    message.success("验证码发送成功");
+                    message.success(i18n("验证码发送成功"));
                 });
             }
         });
@@ -91,7 +100,7 @@
     // ===== 绑定邮箱 =====
     $('[data-save="email"]').click(function () {
         util.post("/user/api/security/email", util.getFormData($form('email')[0]), () => {
-            message.success("绑定成功");
+            message.success(i18n("绑定成功"));
             setTimeout(() => {
                 window.location.reload();
             }, 1500);
@@ -101,7 +110,7 @@
     // ===== 绑定手机 =====
     $('[data-save="phone"]').click(function () {
         util.post("/user/api/security/phone", util.getFormData($form('phone')[0]), () => {
-            message.success("绑定成功");
+            message.success(i18n("绑定成功"));
             setTimeout(() => {
                 window.location.reload();
             }, 1500);
