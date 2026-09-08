@@ -1,0 +1,83 @@
+#{include file="./Header.html"}
+<main class="ln-auth-shell">
+    <section class="ln-auth-story ln-auth-story-register">
+        <div class="ln-auth-story-inner">
+            <div class="ln-auth-eyebrow"><span></span> CREATE ACCOUNT</div>
+            <h1>#{t("从这里开始")}<br><em>#{t("使用全球最好的 AI 工具")}</em></h1>
+            <p>#{t("创建账户，统一管理订单、服务记录与会员权益。")}</p>
+            <div class="ln-auth-note">
+                <span class="ln-auth-note-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M12 3.25 19 6v5.4c0 4.35-2.86 7.54-7 9.35-4.14-1.81-7-5-7-9.35V6l7-2.75Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                        <path d="m8.75 12.1 2.05 2.05 4.45-4.45" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                <div><strong>#{t("信息最小化")}</strong><span>#{t("不收集个人信息。")}</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ln-auth-panel">
+        <div class="ln-auth-card ln-auth-card-register">
+            <div class="ln-auth-card-head">
+                <span>REGISTER</span>
+                <h2>#{t("创建账户")}</h2>
+                <p>#{t("填写以下信息即可完成注册。")}</p>
+            </div>
+
+            <form class="needs-validation">
+                <div class="ln-field">
+                    <label for="username">#{t("用户名")}</label>
+                    <input id="username" type="text" name="username" placeholder="#{t('用户名，支持中文')}" autocomplete="username" required>
+                </div>
+                <div class="ln-field">
+                    <label for="password">#{t("登录密码")}</label>
+                    <input id="password" type="password" name="password" placeholder="#{t('至少 6 位字符')}" autocomplete="new-password" minlength="6" required>
+                </div>
+
+                #{if $config.registered_type == 2}
+                <div class="ln-field">
+                    <label for="email">#{t("邮箱")}</label>
+                    <input id="email" type="email" name="email" placeholder="name@example.com" autocomplete="email" required>
+                </div>
+                    #{if $config.registered_email_verification == 1}
+                    <div class="ln-code-row">
+                        <div class="ln-field"><label for="email_captcha">#{t("邮箱验证码")}</label><input id="email_captcha" type="text" name="email_captcha" placeholder="#{t('输入验证码')}"></div>
+                        <button type="button" class="ln-code-button send-email-code">#{t("发送验证码")}</button>
+                    </div>
+                    #{/if}
+                #{/if}
+
+                #{if $config.registered_type == 1}
+                <div class="ln-field">
+                    <label for="phone">#{t("手机号")}</label>
+                    <input id="phone" type="tel" name="phone" placeholder="#{t('输入手机号')}" autocomplete="tel" required>
+                </div>
+                    #{if $config.registered_phone_verification == 1}
+                    <div class="ln-code-row">
+                        <div class="ln-field"><label for="phone_captcha">#{t("手机验证码")}</label><input id="phone_captcha" type="text" name="phone_captcha" placeholder="#{t('输入验证码')}"></div>
+                        <button type="button" class="ln-code-button send-phone-captcha">#{t("发送验证码")}</button>
+                    </div>
+                    #{/if}
+                #{/if}
+
+                #{if $config.registered_verification == 1}
+                <div class="ln-captcha-row">
+                    <div class="ln-field"><label for="image-captcha">#{t("图形验证码")}</label><input id="image-captcha" type="text" name="captcha" placeholder="#{t('输入验证码')}" autocomplete="off"></div>
+                    <img src="/user/captcha/image?action=register" data-acg-refresh="/user/captcha/image?action=register" class="image-code" alt="#{t('更换验证码')}">
+                </div>
+                #{/if}
+
+                <button type="submit" class="ln-auth-submit">#{t("注册")} <span>→</span></button>
+            </form>
+
+            #{if getHookNum(\App\Consts\Hook::USER_VIEW_AUTH_REGISTER_BUTTON) > 0}
+                <div class="ln-auth-divider"><span>OR</span></div>
+            #{/if}
+            <div class="ln-auth-hook">#{hook(\App\Consts\Hook::USER_VIEW_AUTH_REGISTER_BUTTON)}</div>
+            <p class="ln-auth-switch">#{t("已有账号？")} <a href="/user/authentication/login">#{t("前往登录")}</a></p>
+        </div>
+    </section>
+</main>
+#{ready("/assets/user/controller/auth/register.js?build=20260908-captcha-1")}
+#{include file="./Footer.html"}

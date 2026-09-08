@@ -282,9 +282,7 @@ if (!function_exists("lang_code")) {
     {
         return [
                 "zh-cn" => "zh-CN",
-                "zh-tw" => "zh-TW",
                 "en" => "en",
-                "ja" => "ja",
             ][\Kernel\Util\Lang::get()] ?? "zh-CN";
     }
 }

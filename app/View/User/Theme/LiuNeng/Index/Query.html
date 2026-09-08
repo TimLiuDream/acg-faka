@@ -1,0 +1,76 @@
+#{assign var="lnPage" value="query"}
+#{include file="./Header.html"}
+
+<main class="ln-query-page">
+    <section class="ln-query-hero">
+        <div class="container ln-query-layout">
+            <div class="ln-query-copy">
+                <div class="ln-kicker">ORDER LOOKUP</div>
+                <h1>#{t("找回你的订单，")}<br><em>#{t("继续下一步。")}</em></h1>
+                <p>#{t("输入订单号，或下单时填写的联系方式。我们只会展示与你输入信息匹配的订单。")}</p>
+                <div class="ln-query-points" aria-label="#{t('查询说明')}">
+                    <span><i class="fa-duotone fa-regular fa-shield-check"></i>#{t("信息最少化")}</span>
+                    <span><i class="fa-duotone fa-regular fa-bolt"></i>#{t("实时查询")}</span>
+                </div>
+            </div>
+
+            <div class="ln-query-form-card">
+                <div class="ln-query-form-head">
+                    <span>01</span>
+                    <div>
+                        <small>#{t("订单查询")}</small>
+                        <strong>#{t("输入查询信息")}</strong>
+                    </div>
+                </div>
+                <form class="order-query-form" autocomplete="off">
+                    <label for="lnQueryKeywords">#{t("订单号或联系方式")}</label>
+                    <div class="ln-query-input-wrap">
+                        <i class="fa-duotone fa-regular fa-magnifying-glass"></i>
+                        <input id="lnQueryKeywords" type="text" name="keywords" value="#{$tradeNo}"
+                               placeholder="#{t('例如：订单号、手机号或邮箱')}" inputmode="search">
+                    </div>
+                    <button type="submit" class="btn-search-query">
+                        <span>#{t("查询订单")}</span>
+                        <i class="fa-duotone fa-regular fa-arrow-right"></i>
+                    </button>
+                </form>
+                <p class="ln-query-privacy"><i class="fa-duotone fa-regular fa-lock-keyhole"></i>#{t("查询信息仅用于匹配订单，不会在此页面保存。")}</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="ln-query-output" aria-live="polite">
+        <div class="container">
+            <div class="loading-state" style="display: none;">
+                <div class="ln-query-state">
+                    <span class="ln-query-state-icon"><i class="fa-duotone fa-regular fa-spinner-third icon-spin"></i></span>
+                    <div><strong>#{t("正在查询")}</strong><p>#{t("正在匹配订单信息，请稍候...")}</p></div>
+                </div>
+            </div>
+
+            <div class="no-results" style="display: none;">
+                <div class="ln-query-state">
+                    <span class="ln-query-state-icon"><i class="fa-duotone fa-regular fa-magnifying-glass"></i></span>
+                    <div><strong>#{t("没有找到匹配订单")}</strong><p>#{t("请检查订单号或联系方式是否正确，也可以通过右下角联系支持。")}</p></div>
+                </div>
+            </div>
+
+            <div class="order-results" style="display: none;">
+                <div class="ln-query-result-head">
+                    <div><div class="ln-kicker">RESULT</div><h2>#{t("查询结果")}</h2></div>
+                    <p>#{t("订单状态与交付内容以系统实时数据为准。")}</p>
+                </div>
+                <div class="order-list"></div>
+            </div>
+
+            <div class="ln-query-help">
+                <article><span>01</span><strong>#{t("订单号在哪里？")}</strong><p>#{t("支付完成页及订单通知中均可找到订单号。")}</p></article>
+                <article><span>02</span><strong>#{t("可以用什么查询？")}</strong><p>#{t("支持订单号，以及下单时填写的手机号、邮箱等联系方式。")}</p></article>
+                <article><span>03</span><strong>#{t("仍然查不到？")}</strong><p>#{t("点击右下角联系支持，并提供支付时间与支付金额。")}</p></article>
+            </div>
+        </div>
+    </section>
+</main>
+
+#{ready("/assets/user/controller/index/query.js")}
+#{include file="./Footer.html"}

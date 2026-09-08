@@ -19,7 +19,10 @@ services:
       - acg_assets_cache:/var/www/html/assets/cache
       - acg_plugins:/var/www/html/app/Plugin
       - acg_pay:/var/www/html/app/Pay
-      - acg_themes:/var/www/html/app/View/User/Theme
+      # 二开时直接挂载主题目录，修改模板/CSS 后刷新页面即可预览。
+      - ./app/View/User/Theme:/var/www/html/app/View/User/Theme
+      - ./app/View/Admin:/var/www/html/app/View/Admin
+      - ./assets/admin:/var/www/html/assets/admin
 
   mysql:
     image: mysql:8.0
@@ -62,6 +65,5 @@ volumes:
   acg_assets_cache:
   acg_plugins:
   acg_pay:
-  acg_themes:
   acg_mysql:
   acg_redis:

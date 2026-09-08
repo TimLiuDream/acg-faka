@@ -15,6 +15,7 @@ RUN apt-get update \
     && if ! php -m | grep -qi '^curl$'; then docker-php-ext-install curl; fi \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" \
+        bcmath \
         gd \
         mbstring \
         opcache \
@@ -35,6 +36,10 @@ WORKDIR /var/www/html
 COPY . /var/www/html
 COPY docker/php.ini /usr/local/etc/php/conf.d/acg-faka.ini
 COPY docker/entrypoint.sh /usr/local/bin/acg-faka-entrypoint
+
+# Git checkouts on Windows may convert shell scripts to CRLF. The Linux
+# container cannot execute a CRLF shebang, so normalize it during the build.
+RUN sed -i 's/\r$//' /usr/local/bin/acg-faka-entrypoint
 
 RUN mkdir -p \
         /usr/local/share/acg-faka \

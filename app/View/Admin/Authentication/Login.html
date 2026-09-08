@@ -9,7 +9,8 @@
     [
     "/assets/common/css/_.css",
     "/assets/admin/css/auth.css",
-    "/assets/admin/css/_material-auth.css"
+    "/assets/admin/css/_material-auth.css",
+    "/assets/admin/css/liuneng.css"
     ],
     [
     "/assets/admin/css/style.bundle.css",
@@ -22,7 +23,8 @@
     "/assets/common/js/layer/theme/default/layer.css",
     "/assets/admin/css/auth.css",
     "/assets/common/css/md-tokens.css",
-    "/assets/admin/css/material-auth.css"
+    "/assets/admin/css/material-auth.css",
+    "/assets/admin/css/liuneng.css"
     ])}
 
     #{js("/assets/common/js/ready.js")}
@@ -39,8 +41,18 @@
 </div>
 
 <main class="ay-wrap">
-
-
+    <section class="ln-admin-auth-story" aria-label="#{t('管理后台介绍')}">
+        <div class="ln-admin-auth-story-inner">
+            <div class="ln-admin-auth-eyebrow"><span></span> ADMIN CONSOLE</div>
+            <h1>#{t("一处管理，")}<br><em>#{t("全部数字服务。")}</em></h1>
+            <p>#{t("商品、订单、会员与系统配置，在清晰一致的工作台中完成。")}</p>
+            <div class="ln-admin-auth-meta">
+                <div><b>01</b><span>#{t("经营数据清晰可见")}</span></div>
+                <div><b>02</b><span>#{t("关键操作集中处理")}</span></div>
+                <div><b>03</b><span>#{t("账户安全持续保护")}</span></div>
+            </div>
+        </div>
+    </section>
     <section class="ay-card" role="dialog" aria-labelledby="ay-title" aria-describedby="ay-sub">
         <button type="button" class="ay-theme" id="ay-theme" aria-label="#{t('切换明暗主题')}" title="#{t('切换明暗主题')}">
             <svg class="ico-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
@@ -55,8 +67,8 @@
         </button>
         <header class="ay-head">
             <div class="ay-logo" aria-hidden="true"></div>
-            <h1 id="ay-title" class="ay-title">#{t("欢迎回来，指挥官")}</h1>
-            <p id="ay-sub" class="ay-sub">#{t("正在验证您的管理员身份")}</p>
+            <h1 id="ay-title" class="ay-title">#{t("登录管理后台")}</h1>
+            <p id="ay-sub" class="ay-sub">#{t("验证管理员身份后继续")}</p>
         </header>
 
         <div class="ay-body">

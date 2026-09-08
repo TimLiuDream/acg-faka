@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
     <script>(function(){var e=document.documentElement;try{var p=localStorage.getItem('admin-theme')||'auto';var d=p==='auto'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):p;e.setAttribute('data-theme',d);e.setAttribute('data-theme-pref',p);var m=localStorage.getItem('admin-layout-mode')==='desktop'?'desktop':((window.innerWidth||screen.width)<992?'mobile':'desktop');e.setAttribute('data-admin-layout',m);}catch(_){e.setAttribute('data-theme','light');e.setAttribute('data-admin-layout',(window.innerWidth||screen.width)<992?'mobile':'desktop');}})();</script>
     <title>#{$title}-#{$config.title}</title>
-    <link rel="shortcut icon" href="/favicon.ico"/>
+    <link rel="shortcut icon" href="#{$favicon}"/>
 
     #{css(
     [
@@ -16,7 +16,8 @@
     "/assets/common/css/_material.css",
     "/assets/common/fonts/material-icons.css",
     "/assets/admin/css/_material.css",
-    "/assets/admin/css/_mobile.css"
+    "/assets/admin/css/_mobile.css",
+    "/assets/admin/css/liuneng.css"
     ],
     [
     "/assets/admin/css/style.bundle.css",
@@ -33,7 +34,8 @@
     "/assets/admin/css/material.css",
     "/assets/common/fonts/material-icons.css",
     "/assets/common/css/mdicon.css",
-    "/assets/admin/css/mobile.css"
+    "/assets/admin/css/mobile.css",
+    "/assets/admin/css/liuneng.css"
     ])}
 
     #{js("/assets/common/js/ready.js")}
@@ -333,7 +335,7 @@
                     <!--begin::Brand (moved from the aside — full-width-header layout, desktop only)-->
                     <div class="aside-logo flex-column-auto d-none d-lg-flex" id="kt_aside_logo">
                         <a href="/admin/dashboard/index" class="d-flex align-items-center">
-                            <img style="border-radius: 50%;height: 22px;" src="/favicon.ico">
+                            <img style="border-radius: 50%;height: 22px;" src="#{$favicon}">
                             <span class="logo fw-bolder ms-2 fs-4" style="color: #919191;">#{$config.shop_name}</span>
                         </a>
                         <div id="kt_aside_toggle" class="btn btn-icon w-auto px-0 btn-active-color-primary aside-toggle"
@@ -365,7 +367,7 @@
                     <!--begin::Mobile logo-->
                     <div class="align-items-center flex-grow-1 flex-lg-grow-0 d-hide show-mobile">
                         <a href="/admin/dashboard/index"><img height="25px" style="border-radius: 50%;"
-                                                              src="/favicon.ico"></a>
+                                                              src="#{$favicon}"></a>
                     </div>
                     <!--end::Mobile logo-->
                     <!--begin::Wrapper-->
@@ -435,9 +437,7 @@
                                         </button>
                                         <div id="md-lang-menu" class="md-theme-menu">
                                             <div class="md-theme-opt" data-lang-value="zh-cn"><span>简体中文</span><i class="md-check fa-duotone fa-regular fa-check"></i></div>
-                                            <div class="md-theme-opt" data-lang-value="zh-tw"><span>繁體中文</span><i class="md-check fa-duotone fa-regular fa-check"></i></div>
                                             <div class="md-theme-opt" data-lang-value="en"><span>English</span><i class="md-check fa-duotone fa-regular fa-check"></i></div>
-                                            <div class="md-theme-opt" data-lang-value="ja"><span>日本語</span><i class="md-check fa-duotone fa-regular fa-check"></i></div>
                                         </div>
                                     </div>
                                 </div>

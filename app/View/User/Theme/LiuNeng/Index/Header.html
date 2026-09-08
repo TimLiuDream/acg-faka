@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="#{lang_code()}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="#{$config.keywords}"/>
+    <meta name="description" content="#{$config.description}"/>
+    <link href="#{$favicon}" rel="icon">
+    <title>#{$title} - #{$config.shop_name}</title>
+    #{css(
+    [
+    "/assets/common/css/bootstrap.min.css",
+    "/assets/common/css/_.css",
+    "/app/View/User/Theme/LiuNeng/assets/theme.css?build=20260908-query-1"
+    ],
+    [
+    "/assets/common/css/font.min.css",
+    "/assets/common/js/layui/css/layui.css",
+    "/assets/common/css/select2.min.css",
+    "/assets/common/css/component.css",
+    "/assets/common/js/layer/theme/default/layer.css",
+    "/assets/common/css/bootstrap.min.css",
+    "/assets/common/css/toastr.min.css",
+    "/app/View/User/Theme/LiuNeng/assets/theme.css?build=20260908-query-1"
+    ])}
+    #{js("/assets/common/js/ready.js")}
+    #{index_var()}
+    #{hook(\App\Consts\Hook::USER_GLOBAL_VIEW_HEADER)}
+    #{hook(\App\Consts\Hook::USER_VIEW_INDEX_HEADER)}
+</head>
+<body class="ln-body">
+<header class="ln-header">
+    <nav class="navbar navbar-expand-lg">
+        <div class="container ln-nav">
+            <a class="ln-brand" href="/">
+                <img src="#{$favicon}" alt="#{$config.shop_name}">
+                <span>#{$config.shop_name}</span>
+            </a>
+
+            <button class="navbar-toggler ln-menu-toggle" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#liunengNav" aria-controls="liunengNav" aria-expanded="false"
+                    aria-label="#{t('打开导航')}">
+                <i class="fa-duotone fa-regular fa-bars"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="liunengNav">
+                <div class="ln-nav-pill mx-auto">
+                    <a class="#{if $lnPage != 'query'}active#{/if}" href="#{if $lnPage == 'index'}#plans#{else}/#plans#{/if}">#{t("AI 方案")}</a>
+                    #{foreach user_header_nav(['shop' => ['name' => t('全部商品')]]) as $nav}
+                        #{if $nav.key != 'shop'}
+                            <a class="#{if $lnPage == 'query' && $nav.url == '/user/index/query'}active#{/if}" href="#{$nav.url}" target="#{$nav.target}">#{$nav.name}</a>
+                        #{/if}
+                    #{/foreach}
+                </div>
+            </div>
+
+            <div class="ln-nav-actions">
+                <div class="dropdown ln-language">
+                    <button type="button" id="langDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                            title="#{t('语言')}">
+                        <i class="fa-duotone fa-regular fa-globe"></i>
+                        <span data-lang-label></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="langDropdown">
+                        <li><a class="dropdown-item" href="javascript:;" data-lang-value="zh-cn">简体中文</a></li>
+                        <li><a class="dropdown-item" href="javascript:;" data-lang-value="en">English</a></li>
+                    </ul>
+                </div>
+                #{if $user}
+                    <a class="ln-login" href="/user/dashboard/index">
+                        <img src="#{$user.avatar}" alt="#{$user.username}">
+                        <span>#{$user.username}</span>
+                    </a>
+                #{else}
+                    <a class="ln-login" href="/user/authentication/login">
+                        <i class="fa-duotone fa-regular fa-user"></i>
+                        <span>#{t("登录")}</span>
+                    </a>
+                #{/if}
+            </div>
+        </div>
+    </nav>
+</header>
+<div id="pjax-container">

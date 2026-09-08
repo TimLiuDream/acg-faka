@@ -1,0 +1,66 @@
+#{include file="./Header.html"}
+<main class="ln-auth-shell">
+    <section class="ln-auth-story">
+        <div class="ln-auth-story-inner">
+            <div class="ln-auth-eyebrow"><span></span> MEMBER ACCESS</div>
+            <h1>#{t("欢迎回来。")}<br><em>#{t("继续你的 AI 体验。")}</em></h1>
+            <p>#{t("登录后查看订单、管理账户，并获取会员专属价格与服务。")}</p>
+            <div class="ln-auth-points">
+                <div><b>01</b><span>#{t("订单状态随时可查")}</span></div>
+                <div><b>02</b><span>#{t("会员资料集中管理")}</span></div>
+                <div><b>03</b><span>#{t("服务记录清楚留存")}</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ln-auth-panel">
+        <div class="ln-auth-card">
+            <div class="ln-auth-card-head">
+                <span>LOGIN</span>
+                <h2>#{t("登录账户")}</h2>
+                <p>#{t("使用你的用户名、手机号或邮箱继续。")}</p>
+            </div>
+
+            <form method="post" class="needs-validation">
+                <div class="ln-field">
+                    <label for="username">#{t("账户")}</label>
+                    <input id="username" type="text" name="username" placeholder="#{t('用户名 / 手机号 / 邮箱')}" autocomplete="username" required>
+                </div>
+                <div class="ln-field">
+                    <label for="password">#{t("密码")}</label>
+                    <input id="password" type="password" name="password" placeholder="#{t('输入登录密码')}" autocomplete="current-password" minlength="6" required>
+                </div>
+
+                #{if $config.login_verification == 1}
+                <div class="ln-captcha-row">
+                    <div class="ln-field">
+                        <label for="image-captcha">#{t("图形验证码")}</label>
+                        <input id="image-captcha" type="text" name="captcha" placeholder="#{t('输入验证码')}" autocomplete="off">
+                    </div>
+                    <img src="/user/captcha/image?action=login"
+                         data-acg-refresh="/user/captcha/image?action=login"
+                         class="image-code" alt="#{t('更换验证码')}">
+                </div>
+                #{/if}
+
+                <div class="ln-auth-options">
+                    <label class="ln-check"><input name="remember" type="checkbox" value="1"><span></span>#{t("保持会话")}</label>
+                    <a href="#{if $config.forget_type == 0}/user/authentication/emailForget#{else}/user/authentication/phoneForget#{/if}">#{t("忘记密码？")}</a>
+                </div>
+
+                <button type="submit" class="ln-auth-submit">#{t("登录")} <span>→</span></button>
+            </form>
+
+            #{if getHookNum(\App\Consts\Hook::USER_VIEW_AUTH_LOGIN_BUTTON) > 0}
+                <div class="ln-auth-divider"><span>OR</span></div>
+            #{/if}
+            <div class="ln-auth-hook">#{hook(\App\Consts\Hook::USER_VIEW_AUTH_LOGIN_BUTTON)}</div>
+
+            #{if $config.registered_state == 1}
+            <p class="ln-auth-switch">#{t("还没有账号？")} <a href="/user/authentication/register">#{t("创建账户")}</a></p>
+            #{/if}
+        </div>
+    </section>
+</main>
+#{ready("/assets/user/controller/auth/login.js")}
+#{include file="./Footer.html"}

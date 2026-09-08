@@ -278,19 +278,34 @@ class Config extends Manage
             throw new JSONException('LOGO 文件大小不能超过 10MB');
         }
 
+        $favicon = BASE_PATH . '/assets/cache/favicon.ico';
         try {
-            $temporary = BASE_PATH . '/favicon.ico.setting-' . bin2hex(random_bytes(6));
+            $temporary = $favicon . '.setting-' . bin2hex(random_bytes(6));
         } catch (\Throwable $e) {
             throw new JSONException('无法创建安全的 LOGO 临时文件');
         }
         if (!copy($source, $temporary)) {
             throw new JSONException('LOGO 保存失败，请检查目录权限');
         }
-        if (!rename($temporary, BASE_PATH . '/favicon.ico')) {
+        if (!rename($temporary, $favicon)) {
             @unlink($temporary);
             throw new JSONException('LOGO 保存失败，请检查目录权限');
         }
 
+    }
+
+    public function logo(Request $request): array
+    {
+        $post = $this->configPost(['logo'], 'LOGO 设置');
+        $logo = trim($this->settingString($post, 'logo', 255, true));
+
+        $this->installFavicon($logo);
+        ManageLog::log($this->getManage(), '修改了网站 LOGO');
+
+        $version = (string)(filemtime(BASE_PATH . '/assets/cache/favicon.ico') ?: time());
+        return $this->json(200, 'LOGO 已保存', [
+            'favicon' => '/favicon.ico?v=' . rawurlencode($version),
+        ]);
     }
 
     private function configPost(array $allowedFields, string $label): array

@@ -117,11 +117,31 @@
 
         util.bindButtonUpload(".upload-logo", "/admin/api/upload/send?mime=image", data => {
             if (!controllerActive) return;
-            $('input[name=logo]').val(data.url);
-            markFormDirty();
-            layer.msg(i18n('图标上传成功，但需要保存后才会生效'));
-            $('.image-input-wrapper').css({
-                "background-image": `url(${data.url})`
+            const $logoInput = $('input[name=logo]');
+            layer.msg(i18n('图片上传成功，正在保存 LOGO…'));
+            util.post({
+                url: '/admin/api/config/logo',
+                data: {logo: data.url},
+                done: res => {
+                    if (!controllerActive) return;
+                    const favicon = res?.data?.favicon || `/favicon.ico?v=${Date.now()}`;
+                    $logoInput.val('/favicon.ico');
+                    $('.image-input-wrapper').css({"background-image": `url("${favicon}")`});
+                    $('link[rel*="icon"]').attr('href', favicon);
+                    layer.msg(res?.msg || i18n('LOGO 已保存'));
+                },
+                error: res => {
+                    if (!controllerActive) return;
+                    $logoInput.val(data.url);
+                    markFormDirty();
+                    message.error(res?.msg || i18n('LOGO 保存失败'));
+                },
+                fail: () => {
+                    if (!controllerActive) return;
+                    $logoInput.val(data.url);
+                    markFormDirty();
+                    message.error(i18n('网络异常，LOGO 尚未保存'));
+                }
             });
         });
 

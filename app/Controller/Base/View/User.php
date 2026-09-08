@@ -59,7 +59,8 @@ abstract class User extends \App\Controller\Base\User
 
             $data['title'] = lang($title, "tpl");
             $data['app']['version'] = \config("app")['version'];
-            $data['favicon'] = "/favicon.ico";
+            $faviconVersion = filemtime(BASE_PATH . '/assets/cache/favicon.ico') ?: time();
+            $data['favicon'] = "/favicon.ico?v=" . rawurlencode((string)$faviconVersion);
 
             $cfg = Config::list();
 

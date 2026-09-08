@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="#{lang_code()}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="keywords" content="#{$config.keywords}">
+    <meta name="description" content="#{$config.description}">
+    <link href="#{$favicon}" rel="icon">
+    <title>#{$title} - #{$config.shop_name}</title>
+    #{css(
+    [
+    "/assets/common/css/bootstrap.min.css",
+    "/assets/common/css/_.css",
+    "/app/View/User/Theme/LiuNeng/assets/auth.css?build=20260908-auth-button-1"
+    ],
+    [
+    "/assets/common/css/font.min.css",
+    "/assets/common/js/layui/css/layui.css",
+    "/assets/common/css/component.css",
+    "/assets/common/js/layer/theme/default/layer.css",
+    "/assets/common/css/bootstrap.min.css",
+    "/assets/common/css/toastr.min.css",
+    "/app/View/User/Theme/LiuNeng/assets/auth.css?build=20260908-auth-button-1"
+    ])}
+    #{js("/assets/common/js/ready.js")}
+    #{index_var()}
+    #{hook(\App\Consts\Hook::USER_GLOBAL_VIEW_HEADER)}
+</head>
+<body class="ln-auth-body">
+<header class="ln-auth-header">
+    <a class="ln-auth-brand" href="/">
+        <img src="#{$favicon}" alt="#{$config.shop_name}">
+        <span>#{$config.shop_name}</span>
+    </a>
+    <a class="ln-auth-back" href="/"><i class="fa-duotone fa-regular fa-arrow-left"></i> #{t("返回首页")}</a>
+</header>

@@ -1,0 +1,135 @@
+#{include file="../../Cartoon/Common/Header.html"}
+<link rel="stylesheet" href="/app/View/User/Theme/LiuNeng/assets/dashboard.css?build=20260908-dashboard-4">
+
+<main class="uc-main ln-dashboard">
+    <section class="ln-dashboard-hero">
+        <div class="ln-dashboard-hero__intro">
+            <span class="ln-dashboard-eyebrow">PERSONAL CENTER</span>
+            <div class="ln-dashboard-identity">
+                <img src="#{$user.avatar}" alt="" class="ln-dashboard-identity__avatar">
+                <div>
+                    <span class="ln-dashboard-identity__level">
+                        <img src="#{$user.group.icon}" alt="">
+                        #{lang($user.group.name)}
+                    </span>
+                    <h1>#{t("欢迎回来")}，<span>#{$user.username}</span></h1>
+                </div>
+            </div>
+            <p>#{t("在这里管理你的余额、订单与账户信息。")}</p>
+            <div class="ln-dashboard-hero__actions">
+                <a class="ln-dashboard-button ln-dashboard-button--primary" href="/" target="_blank">
+                    <span>#{t("购买商品")}</span><span class="material-icons-outlined">arrow_forward</span>
+                </a>
+                <a class="ln-dashboard-button ln-dashboard-button--secondary" href="/user/personal/purchaseRecord">
+                    <span>#{t("购买记录")}</span><span class="material-icons-outlined">receipt_long</span>
+                </a>
+            </div>
+        </div>
+
+        <aside class="ln-wallet" aria-label="#{t('账户概览')}">
+            <div class="ln-wallet__top">
+                <span class="ln-wallet__label">#{t("账户余额")}</span>
+                <span class="ln-wallet__mark"><span></span><span></span><span></span></span>
+            </div>
+            <div class="ln-wallet__balance"><small>#{$config.currency_symbol}</small>#{$user.balance}</div>
+            <div class="ln-wallet__details">
+                <div>
+                    <span>#{t("硬币")}</span>
+                    <strong>#{$user.coin}</strong>
+                </div>
+                <div>
+                    <span>#{t("元气（总充值）")}</span>
+                    <strong>#{$user.recharge}</strong>
+                </div>
+            </div>
+        </aside>
+    </section>
+
+    <section class="ln-dashboard-section" aria-labelledby="ln-spending-title">
+        <div class="ln-dashboard-section__head">
+            <div>
+                <span class="ln-dashboard-eyebrow">OVERVIEW</span>
+                <h2 id="ln-spending-title">#{t("消费概览")}</h2>
+            </div>
+        </div>
+        <div class="ln-metrics">
+            <article class="ln-metric">
+                <span class="ln-metric__index">01</span>
+                <span class="ln-metric__icon material-icons-outlined">calendar_month</span>
+                <p>#{t("本月购物")}</p>
+                <strong><small>#{$config.currency_symbol}</small>#{$buy_month}</strong>
+            </article>
+            <article class="ln-metric">
+                <span class="ln-metric__index">02</span>
+                <span class="ln-metric__icon material-icons-outlined">shopping_bag</span>
+                <p>#{t("累计购物")}</p>
+                <strong><small>#{$config.currency_symbol}</small>#{$buy_total}</strong>
+            </article>
+            <article class="ln-metric">
+                <span class="ln-metric__index">03</span>
+                <span class="ln-metric__icon material-icons-outlined">receipt_long</span>
+                <p>#{t("累计订单")}</p>
+                <strong>#{$buy_count}<small> #{t("单")}</small></strong>
+            </article>
+        </div>
+    </section>
+
+    #{if $user.businessLevel}
+    <section class="ln-dashboard-section ln-business" aria-labelledby="ln-business-title">
+        <div class="ln-dashboard-section__head ln-business__head">
+            <div>
+                <span class="ln-dashboard-eyebrow">BUSINESS</span>
+                <h2 id="ln-business-title">#{t("经营概览")}</h2>
+            </div>
+            <a href="/user/order/index">#{t("全部订单")}<span class="material-icons-outlined">arrow_forward</span></a>
+        </div>
+        <div class="ln-business__metrics">
+            <article><p>#{t("今日收入")}</p><strong><small>#{$config.currency_symbol}</small>#{$today_income}</strong></article>
+            <article><p>#{t("昨日收入")}</p><strong><small>#{$config.currency_symbol}</small>#{$yesterday_income}</strong></article>
+            <article><p>#{t("本月收入")}</p><strong><small>#{$config.currency_symbol}</small>#{$month_income}</strong></article>
+            <article><p>#{t("总交易")}</p><strong><small>#{$config.currency_symbol}</small>#{$trade}</strong></article>
+        </div>
+        <div class="ln-business__body">
+            <div class="ln-business-chart">
+                <div class="ln-business-chart__title">
+                    <strong>#{t("近 7 日收入")}</strong>
+                    <span>#{t("峰值")} #{$config.currency_symbol}#{$week_series_max}</span>
+                </div>
+                <div class="ln-business-chart__bars">
+                    #{foreach $week_series as $d}
+                    <div title="#{$d.label}：#{$config.currency_symbol}#{$d.amount}">
+                        <span style="height: #{$d.pct}%"></span>
+                        <small>#{$d.label}</small>
+                    </div>
+                    #{/foreach}
+                </div>
+            </div>
+            <div class="ln-business-status">
+                <a href="/user/order/index"><span>#{t("今日订单")}</span><strong>#{$today_orders}<small> #{t("单")}</small></strong></a>
+                <a href="/user/order/index"><span>#{t("待发货")}</span><strong>#{$pending_delivery}<small> #{t("单")}</small></strong></a>
+                <a href="/user/card/index"><span>#{t("未售卡密")}</span><strong>#{$card_unsold}<small> #{t("张")}</small></strong></a>
+                <a href="/user/commodity/index"><span>#{t("在售商品")}</span><strong>#{$commodity_online}<small> / #{$commodity_count}</small></strong></a>
+            </div>
+        </div>
+    </section>
+    #{/if}
+
+    <section class="uc-card ln-dashboard-panel ln-orders-panel">
+        <div class="ln-dashboard-panel__head">
+            <div>
+                <span class="ln-dashboard-eyebrow">RECENT ORDERS</span>
+                <h2>#{t("最近购买")}</h2>
+                <p>#{t("查看最近订单的付款与交付状态")}</p>
+            </div>
+            <a class="ln-orders-panel__all" href="/user/personal/purchaseRecord">
+                #{t("全部记录")}
+            </a>
+        </div>
+        <div class="ln-orders-panel__table">
+            <table id="recent-buy-table"></table>
+        </div>
+    </section>
+</main>
+
+#{ready("/assets/user/controller/dashboard/index.js")}
+#{include file="../../Cartoon/Common/Footer.html"}

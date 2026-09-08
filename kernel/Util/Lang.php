@@ -19,7 +19,7 @@ final class Lang
 {
     public const COOKIE = "acg_lang";
     public const SOURCE = "zh-cn";
-    public const LANGS = ["zh-cn", "zh-tw", "en", "ja"];
+    public const LANGS = ["zh-cn", "en"];
     public const TABLE = "lang";
 
     //单条可入库文本的最大长度(字符)，超长的动态文本不进翻译库
@@ -97,19 +97,10 @@ final class Lang
     private static function mapTag(string $tag): ?string
     {
         if (str_starts_with($tag, "zh")) {
-            //zh-tw / zh-hk / zh-mo / zh-hant 归繁体，其余中文归简体
-            foreach (["tw", "hk", "mo", "hant"] as $t) {
-                if (str_contains($tag, $t)) {
-                    return "zh-tw";
-                }
-            }
             return "zh-cn";
         }
         if (str_starts_with($tag, "en")) {
             return "en";
-        }
-        if (str_starts_with($tag, "ja")) {
-            return "ja";
         }
         return null;
     }
@@ -502,6 +493,7 @@ final class Lang
      *
      * 覆盖策略：
      *   - 库里没有         → 插入，status=2
+     *   - 库里待翻译(0)     → 用词包补齐并升级为 2
      *   - 库里是机翻(1)     → 用词包覆盖并升级为 2；扩展作者写的译文比机翻可靠
      *   - 库里是人工确认(2) → 不动，保护站长在后台改过的译法
      *   - $force=true      → 额外覆盖同一 scene 的行（该扩展自己上一版留下的译文）
@@ -554,7 +546,7 @@ final class Lang
                 $stored += (int)DB::table(self::TABLE)->insertOrIgnore($chunk);
             }
 
-            //已存在的行：机翻可以被词包顶掉；force 时连本扩展上一版的译文一起刷新
+            //已存在的行：待翻与机翻都可以被人工词包顶掉；force 时连本扩展上一版的译文一起刷新
             foreach (array_chunk($rows, 200) as $chunk) {
                 foreach ($chunk as $row) {
                     //不加 text != 条件：译文碰巧一致的行也要认领 scene，
@@ -564,9 +556,9 @@ final class Lang
                         ->where("lang", $lang);
                     $query = $force
                         ? $query->where(function ($q) use ($scene) {
-                            $q->where("status", 1)->orWhere("scene", $scene);
+                            $q->whereIn("status", [0, 1])->orWhere("scene", $scene);
                         })
-                        : $query->where("status", 1);
+                        : $query->whereIn("status", [0, 1]);
                     $stored += (int)$query->update([
                         "text" => $row["text"],
                         "status" => 2,

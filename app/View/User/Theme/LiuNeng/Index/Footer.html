@@ -1,0 +1,161 @@
+</div>
+<footer class="ln-footer" id="footer-contact">
+    <div class="container">
+        <div class="ln-footer-brand">
+            <img src="#{$favicon}" alt="#{$config.shop_name}">
+            <div><strong>#{$config.shop_name}</strong><span>#{t("清晰、可靠的数字服务体验")}</span></div>
+        </div>
+        <div class="ln-footer-copy">© #{date('Y')} #{$config.shop_name} #{if $setting.icp}<span>#{$setting.icp}</span>#{/if}</div>
+    </div>
+</footer>
+
+<div class="ln-support-backdrop" id="lnSupportBackdrop"></div>
+<aside class="ln-support-widget" id="lnSupportWidget" aria-label="#{t('联系支持')}">
+    <button class="ln-support-trigger" type="button" aria-expanded="false" aria-controls="lnSupportCard">
+        <i class="fa-duotone fa-regular fa-message-dots"></i>
+        <span>#{t("联系支持")}</span>
+    </button>
+
+    <div class="ln-support-card" id="lnSupportCard" aria-hidden="true">
+        <div class="ln-support-head">
+            <div>
+                <span class="ln-support-kicker">SUPPORT</span>
+                <h2>#{t("需要帮助？")}</h2>
+            </div>
+            <button type="button" class="ln-support-close" aria-label="#{t('关闭')}">
+                <i class="fa-duotone fa-regular fa-xmark"></i>
+            </button>
+        </div>
+        <p class="ln-support-intro">#{t("购买前咨询或订单售后，都可以直接找到我。")}</p>
+
+        <div class="ln-support-wechat">
+            <div class="ln-support-qr">
+                #{if $setting.support_wechat_qr}
+                <img src="#{$setting.support_wechat_qr}" alt="#{t('微信二维码')}">
+                #{else}
+                <span><i class="fa-duotone fa-regular fa-qrcode"></i><small>QR</small></span>
+                #{/if}
+            </div>
+            <div class="ln-support-wechat-copy">
+                <strong>WeChat #{t("优先咨询")}</strong>
+                <p>#{t("扫码添加微信，购买咨询与订单售后都可以直接联系。")}</p>
+                #{if $setting.support_wechat}
+                <button type="button" data-copy-wechat="#{$setting.support_wechat|escape:'html'}">#{t("复制微信号")}</button>
+                #{else}
+                <button type="button" disabled>#{t("微信暂未配置")}</button>
+                #{/if}
+            </div>
+        </div>
+
+        <div class="ln-support-rows">
+            #{if $setting.support_telegram}
+            <a class="ln-support-row" data-social="telegram" data-handle="#{$setting.support_telegram|escape:'html'}" href="#" target="_blank" rel="noopener noreferrer">
+                <strong>Telegram</strong><span>#{$setting.support_telegram}</span><i class="fa-duotone fa-regular fa-arrow-up-right"></i>
+            </a>
+            #{else}
+            <div class="ln-support-row is-empty"><strong>Telegram</strong><span>#{t("暂未配置")}</span></div>
+            #{/if}
+
+            #{if $setting.support_twitter}
+            <a class="ln-support-row" data-social="twitter" data-handle="#{$setting.support_twitter|escape:'html'}" href="#" target="_blank" rel="noopener noreferrer">
+                <strong>Twitter / X</strong><span>#{$setting.support_twitter}</span><i class="fa-duotone fa-regular fa-arrow-up-right"></i>
+            </a>
+            #{else}
+            <div class="ln-support-row is-empty"><strong>Twitter / X</strong><span>#{t("暂未配置")}</span></div>
+            #{/if}
+
+            #{if $setting.support_url}
+            <a class="ln-support-row" href="#{$setting.support_url}" target="_blank" rel="noopener noreferrer">
+                <strong>#{t("更多方式")}</strong><span>#{t("打开联系页面")}</span><i class="fa-duotone fa-regular fa-arrow-up-right"></i>
+            </a>
+            #{/if}
+        </div>
+    </div>
+</aside>
+
+<script>
+    (function () {
+        var widget = document.getElementById('lnSupportWidget');
+        var backdrop = document.getElementById('lnSupportBackdrop');
+        var trigger = widget.querySelector('.ln-support-trigger');
+        var closeButton = widget.querySelector('.ln-support-close');
+        var card = document.getElementById('lnSupportCard');
+
+        function setOpen(open) {
+            widget.classList.toggle('is-open', open);
+            backdrop.classList.toggle('is-open', open);
+            trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+            card.setAttribute('aria-hidden', open ? 'false' : 'true');
+            if (open) setTimeout(function () { closeButton.focus(); }, 220);
+        }
+
+        trigger.addEventListener('click', function () { setOpen(true); });
+        closeButton.addEventListener('click', function () { setOpen(false); trigger.focus(); });
+        backdrop.addEventListener('click', function () { setOpen(false); });
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && widget.classList.contains('is-open')) setOpen(false);
+        });
+
+        widget.querySelectorAll('[data-social]').forEach(function (link) {
+            var value = (link.getAttribute('data-handle') || '').trim();
+            if (/^https?:\/\//i.test(value)) {
+                link.href = value;
+                return;
+            }
+            value = value.replace(/^@/, '');
+            link.href = link.getAttribute('data-social') === 'telegram'
+                ? 'https://t.me/' + encodeURIComponent(value)
+                : 'https://x.com/' + encodeURIComponent(value);
+        });
+
+        var copyButton = widget.querySelector('[data-copy-wechat]');
+        if (copyButton) copyButton.addEventListener('click', function () {
+            var value = copyButton.getAttribute('data-copy-wechat');
+            var done = function () {
+                copyButton.textContent = '#{t("已复制微信号")}';
+                setTimeout(function () { copyButton.textContent = '#{t("复制微信号")}'; }, 1600);
+            };
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(value).then(done);
+            } else {
+                var input = document.createElement('textarea');
+                input.value = value;
+                input.style.position = 'fixed';
+                input.style.opacity = '0';
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                input.remove();
+                done();
+            }
+        });
+    })();
+</script>
+
+#{js(
+[
+"/assets/common/js/_.js",
+"/assets/user/js/_index.js"
+],
+[
+"/assets/common/js/util/dict.js",
+"/assets/common/js/jquery.min.js",
+"/assets/common/js/toastr.min.js",
+"/assets/common/js/component/loading.js",
+"/assets/common/js/util.js",
+"/assets/common/js/layer/layer.js",
+"/assets/common/js/jquery.pjax.min.js",
+"/assets/common/js/format.js",
+"/assets/common/js/message.js",
+"/assets/common/js/component.js",
+"/assets/common/js/bootstrap/bootstrap.bundle.min.js",
+"/assets/common/js/cache.js",
+"/assets/user/js/trade.js",
+"/assets/user/js/treasure.js"
+])}
+#{hook(\App\Consts\Hook::USER_GLOBAL_VIEW_BODY)}
+#{hook(\App\Consts\Hook::USER_VIEW_INDEX_BODY)}
+</body>
+#{hook(\App\Consts\Hook::USER_GLOBAL_VIEW_FOOTER)}
+#{hook(\App\Consts\Hook::USER_VIEW_INDEX_FOOTER)}
+</html>

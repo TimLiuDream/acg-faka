@@ -1,0 +1,91 @@
+#{assign var="lnPage" value="index"}
+#{include file="./Header.html"}
+<main>
+    <section class="ln-hero">
+        <div class="ln-orb ln-orb-one"></div>
+        <div class="ln-orb ln-orb-two"></div>
+        <div class="container ln-hero-inner">
+            <div class="ln-eyebrow"><span></span>#{t($setting.hero_eyebrow)}</div>
+            <h1>#{t($setting.hero_title)}<br><em>#{t($setting.hero_accent)}</em></h1>
+            <p>#{t($setting.hero_description)}</p>
+            <div class="ln-hero-actions">
+                <a class="ln-button ln-button-dark" href="#plans">#{t("查看方案")}</a>
+                <a class="ln-button ln-button-light" href="#{$setting.support_url}">#{t("咨询支持")} <span>↗</span></a>
+            </div>
+        </div>
+    </section>
+
+    <section class="ln-section ln-plans" id="plans">
+        <div class="container">
+            <div class="ln-section-head">
+                <div>
+                    <div class="ln-kicker">PLANS</div>
+                    <h2>#{t("选择适合你的方案。")}</h2>
+                </div>
+                <p>#{t("选择分类并查看当前可购买的服务。价格、库存和交付方式以下单时显示为准。")}</p>
+            </div>
+
+            <div class="ln-category-row">
+                <div class="chip-list">
+                    #{foreach $category as $cate}
+                        <a data-id="#{$cate.id}"
+                           class="switch-category chip #{if $cate@first && $categoryId == 0}is-primary#{elseif $cate.id == $categoryId}is-primary#{/if}"
+                           href="javascript:void(0);">
+                            #{if $cate.id != 'recommend'}<span class="chip-icon" style="background-image:url('#{$cate.icon}')"></span>#{/if}
+                            #{lang($cate.name)}
+                        </a>
+                    #{/foreach}
+                </div>
+                <label class="ln-search">
+                    <i class="fa-duotone fa-regular fa-magnifying-glass"></i>
+                    <input class="item-search-input" type="search" placeholder="#{t('搜索方案')}">
+                </label>
+            </div>
+
+            <div class="row g-4 item-list">
+                <div class="item-message">#{t("努力加载中..")}</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ln-section ln-trust" id="trust">
+        <div class="container">
+            <div class="ln-kicker">TRUST BY DESIGN</div>
+            <div class="ln-trust-grid">
+                <div class="ln-trust-intro">
+                    <h2>#{t("先讲清楚，再开始。")}</h2>
+                    <p>#{t("服务流程、交付方式和售后边界会在下单前说明，让每一步都有依据。")}</p>
+                </div>
+                <article><span>01</span><h3>#{t("账户归你")}</h3><p>#{t("服务在你自己的账户或订单中完成，不提供多人共享账号。")}</p></article>
+                <article><span>02</span><h3>#{t("信息最少化")}</h3><p>#{t("只收集履行订单需要的信息，不索取无关的敏感资料。")}</p></article>
+                <article><span>03</span><h3>#{t("边界透明")}</h3><p>#{t("商品说明、订单状态与售后规则清楚可查。")}</p></article>
+            </div>
+            <div class="ln-process-block">
+                <div class="ln-section-head">
+                    <div><div class="ln-kicker">HOW IT WORKS</div><h2>#{t("四步，始终可见。")}</h2></div>
+                    <p>#{t("从选择方案到完成交付，每一步都有清楚的状态反馈。")}</p>
+                </div>
+                <ol class="ln-steps">
+                    <li><b>01</b><span><strong>#{t("选择方案")}</strong><small>#{t("确认商品内容与适用范围")}</small></span></li>
+                    <li><b>02</b><span><strong>#{t("填写信息")}</strong><small>#{t("只提交订单所需的信息")}</small></span></li>
+                    <li><b>03</b><span><strong>#{t("确认支付")}</strong><small>#{t("选择可用的支付方式")}</small></span></li>
+                    <li><b>04</b><span><strong>#{t("查询状态")}</strong><small>#{t("使用订单号跟踪进度")}</small></span></li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
+    <section class="ln-section ln-faq">
+        <div class="container ln-faq-layout">
+            <div><div class="ln-kicker">FAQ</div><h2>#{t("下单前，需要知道。")}</h2></div>
+            <div class="ln-faq-list">
+                <details><summary>#{t("如何查看订单状态？")}<span>＋</span></summary><p>#{t("进入订单查询页，输入订单号或下单时填写的联系方式即可查询。")}</p></details>
+                <details><summary>#{t("多久可以收到商品？")}<span>＋</span></summary><p>#{t("自动发货商品通常在支付确认后立即交付；人工商品以商品说明为准。")}</p></details>
+                <details><summary>#{t("遇到问题如何联系？")}<span>＋</span></summary><p>#{t("请准备订单号并通过页面中的咨询支持入口联系。")}</p></details>
+            </div>
+        </div>
+    </section>
+
+</main>
+#{ready("/assets/user/controller/index/index.js")}
+#{include file="./Footer.html"}

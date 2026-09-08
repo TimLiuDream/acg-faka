@@ -210,7 +210,7 @@
         const pass = $(`.passin-${tradeNo}`).val().trim();
 
         if (!pass) {
-            message.error("请输入密码");
+            message.error(i18n("请输入密码"));
             return;
         }
 
@@ -234,7 +234,7 @@
                 _ShowPasswordInput(tradeNo);
             },
             fail: () => {
-                message.error("网络错误");
+                message.error(i18n("网络错误"));
                 _HidePasswordLoading(tradeNo);
                 _ShowPasswordInput(tradeNo);
             }
@@ -249,7 +249,7 @@
         const keywords = data?.keywords?.trim();
 
         if (!keywords) {
-            message.error("请输入联系方式或订单号再查询");
+            message.error(i18n("请输入联系方式或订单号再查询"));
             return;
         }
 

@@ -48,7 +48,7 @@
                                          style="background-image: url(/assets/admin/images/setting/blank.png)">
                                         <!--begin::Preview existing logo-->
                                         <div class="image-input-wrapper w-125px h-125px"
-                                             style="background-image: url(/favicon.ico)"></div>
+                                             style="background-image: url('#{$favicon}')"></div>
                                         <!--end::Preview existing logo-->
                                         <!--begin::Label-->
                                         <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
@@ -73,8 +73,7 @@
                                     </div>
                                     <!--end::Image input-->
                                     <!--begin::Hint-->
-                                    <div class="form-text">#{t("支持文件格式: png, jpg, jpeg,
-                                        ico，更换后，记得强制刷新浏览器，否则你看到的还是缓存。")}
+                                    <div class="form-text">#{t("支持文件格式：png、jpg、jpeg、ico。上传成功后会自动保存并刷新全站 LOGO。")}
                                     </div>
                                     <!--end::Hint-->
                                 </div>
@@ -552,5 +551,5 @@
 </div>
 <!--end::Content-->
 
-#{ready("/assets/admin/controller/config/index.js")}
+#{ready("/assets/admin/controller/config/index.js?build=logo-save-1")}
 #{include file="../Footer.html"}
