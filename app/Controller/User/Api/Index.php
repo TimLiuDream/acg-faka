@@ -20,6 +20,7 @@ use App\Service\Query;
 use App\Service\Shared;
 use App\Service\Shop;
 use App\Util\Client;
+use App\Util\Http;
 use App\Util\RedeemPayloadCrypto;
 use App\Util\Schema;
 use App\Util\Theme;
@@ -611,6 +612,77 @@ class Index extends User
             "status_text" => "排队中",
             "create_time" => $now,
         ]);
+    }
+
+    /**
+     * 查询上游兑换进度：服务端固定目标地址转发，避免浏览器跨域。
+     * @return array
+     * @throws JSONException
+     */
+    public function redeemProgress(): array
+    {
+        $secret = mb_strtolower(trim((string)$this->request->post("secret", flags: Filter::NORMAL)));
+
+        if (mb_strlen($secret) < 4 || mb_strlen($secret) > 128) {
+            throw new JSONException("请输入正确的卡密");
+        }
+
+        $ip = Client::getAddress();
+        $secretHash = hash('sha256', $secret);
+        if (Throttle::tooMany("redeemProgress:ip:{$ip}", 30, 600)
+            || Throttle::tooMany("redeemProgress:no:{$secretHash}:{$ip}", 10, 600)) {
+            throw new JSONException("请求过于频繁，请稍后再试");
+        }
+
+        try {
+            $response = Http::make([
+                'verify' => true,
+                'timeout' => 12,
+                'connect_timeout' => 5,
+                'http_errors' => false,
+            ])->post('https://cz.0xzheng.com/api/order', [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => ['key' => $secret],
+            ]);
+        } catch (\Throwable) {
+            throw new JSONException("进度查询服务暂不可用，请稍后再试");
+        }
+
+        $payload = json_decode((string)$response->getBody(), true);
+        if (!is_array($payload)) {
+            throw new JSONException("进度查询服务返回异常，请稍后再试");
+        }
+
+        $card = $payload['data']['card'] ?? null;
+        if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300 || !is_array($card)) {
+            $message = trim(strip_tags((string)($payload['message'] ?? '')));
+            throw new JSONException($message !== '' ? mb_substr($message, 0, 160) : "未查询到兑换进度");
+        }
+
+        $status = (string)($card['status'] ?? '');
+        if (!in_array($status, ['unused', 'redeeming', 'pending', 'processing', 'done', 'failed', 'revoked'], true)) {
+            $status = 'processing';
+        }
+
+        $safeCard = [
+            'key' => (string)($card['key'] ?? $secret),
+            'status' => $status,
+            'tier' => (string)($card['tier'] ?? ''),
+            'tierLabel' => (string)($card['tierLabel'] ?? ''),
+            'orderId' => (string)($card['orderId'] ?? ''),
+            'usedAt' => (string)($card['usedAt'] ?? ''),
+            'note' => mb_substr((string)($card['note'] ?? ''), 0, 1000),
+        ];
+        foreach (['ahead', 'total', 'estWaitMs'] as $field) {
+            $safeCard[$field] = isset($card[$field]) && is_numeric($card[$field])
+                ? max(0, (int)$card[$field])
+                : null;
+        }
+
+        return $this->json(data: ['card' => $safeCard]);
     }
 
     private function redeemableCard(string $secret, bool $lockForUpdate = false): Card

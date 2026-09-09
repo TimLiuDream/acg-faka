@@ -18,7 +18,17 @@
         3: {cls: 'is-failed', text: i18n('失败')}
     });
 
-    // ===== 第 1 步：验证卡密 / 恢复进度 =====
+    const progressStatusMap = () => ({
+        unused: {cls: 'is-queue', text: i18n('未使用')},
+        redeeming: {cls: 'is-running', text: i18n('提交中')},
+        pending: {cls: 'is-queue', text: i18n('排队中')},
+        processing: {cls: 'is-running', text: i18n('处理中')},
+        done: {cls: 'is-done', text: i18n('已完成')},
+        failed: {cls: 'is-failed', text: i18n('失败')},
+        revoked: {cls: 'is-failed', text: i18n('已作废')}
+    });
+
+    // ===== 第 1 步：查询上游兑换进度，同时确认卡密 =====
     $('.ln-activate-verify').on('click', function () {
         const secret = String($secret.val() || '').trim();
         if (secret.length < 4) {
@@ -30,27 +40,30 @@
         $btn.attr('disabled', true);
 
         util.post({
-            url: "/user/api/index/redeem",
+            url: "/user/api/index/redeemProgress",
             data: {secret: secret},
             loader: false,
             done: res => {
                 $btn.attr('disabled', false);
-                const data = res?.data ?? {};
+                const card = res?.data?.card ?? null;
+                if (!card || !card.status) {
+                    verifiedSecret = null;
+                    $verifyState.html(`<span class="is-bad">${i18n('进度查询服务返回异常，请稍后再试')}</span>`);
+                    $progress.hide().empty();
+                    return;
+                }
                 verifiedSecret = secret;
-
-                const statusText = data.status === 1 ? i18n('已激活')
-                    : data.status === 2 ? i18n('已锁定') : i18n('未激活');
+                const meta = progressStatusMap()[card.status] || progressStatusMap().processing;
                 $verifyState.html(
-                    `<span class="is-ok"><i class="fa-duotone fa-regular fa-circle-check"></i> ${i18n('卡密有效')}</span> `
-                    + `<span class="is-dim">${i18n('商品')}：${esc(data.commodity?.name || '-')} · ${esc(statusText)}</span>`
+                    `<span class="is-ok"><i class="fa-duotone fa-regular fa-circle-check"></i> ${i18n('进度查询成功')}</span> `
+                    + `<span class="is-dim">${i18n('当前状态')}：${esc(meta.text)}</span>`
                 );
-
-                _RenderProgress(data.redeem ?? null);
+                _RenderRemoteProgress(card);
             },
             error: res => {
                 $btn.attr('disabled', false);
                 verifiedSecret = null;
-                $verifyState.html(`<span class="is-bad"><i class="fa-duotone fa-regular fa-circle-xmark"></i> ${esc(res?.msg || i18n('卡密不存在，请核对后重试'))}</span>`);
+                $verifyState.html(`<span class="is-bad"><i class="fa-duotone fa-regular fa-circle-xmark"></i> ${esc(res?.msg || i18n('未查询到兑换进度'))}</span>`);
                 $progress.hide().empty();
             },
             fail: () => {
@@ -60,6 +73,46 @@
             }
         });
     });
+
+    function _RenderRemoteProgress(card) {
+        const map = progressStatusMap();
+        const meta = map[card.status] || map.processing;
+        const rows = [];
+        const tier = card.tierLabel || card.tier;
+        if (tier) rows.push(`<p>${i18n('产品')}：${esc(tier)}</p>`);
+        if (card.orderId) rows.push(`<p>${i18n('订单号')}：${esc(card.orderId)}</p>`);
+        if ((card.status === 'pending' || card.status === 'processing') && Number.isFinite(card.ahead)) {
+            const total = Number.isFinite(card.total) ? card.total : '-';
+            rows.push(`<p>${i18n('前方排队')}：${esc(card.ahead + 1)} / ${esc(total)}</p>`);
+        }
+        if ((card.status === 'pending' || card.status === 'processing') && Number.isFinite(card.estWaitMs)) {
+            rows.push(`<p>${i18n('预计等待')}：${i18n('约')} ${Math.max(1, Math.round(card.estWaitMs / 60000))} ${i18n('分钟')}</p>`);
+        }
+        if (card.usedAt) {
+            const usedAt = new Date(card.usedAt);
+            rows.push(`<p>${i18n('提交时间')}：${esc(Number.isNaN(usedAt.getTime()) ? card.usedAt : usedAt.toLocaleString())}</p>`);
+        }
+        if (card.note) rows.push(`<p>${i18n('说明')}：${esc(card.note)}</p>`);
+
+        const hints = {
+            unused: i18n('卡密尚未提交兑换。'),
+            done: i18n('兑换已完成，请登录账号确认到账。'),
+            failed: i18n('本次兑换未成功，请根据说明处理或联系支持。'),
+            revoked: i18n('该卡密已作废，请联系发卡方处理。')
+        };
+        const hint = hints[card.status] || i18n('进度来自兑换服务，可稍后再次查询。');
+
+        $progress.html(`
+            <div class="ln-activate-progress__box">
+                <strong>
+                    <i class="fa-duotone fa-regular fa-clock-rotate-left"></i>${i18n('兑换进度')}
+                    <span class="ln-activate-chip ${meta.cls}">${esc(meta.text)}</span>
+                </strong>
+                ${rows.join('')}
+                <p>${esc(hint)}</p>
+            </div>
+        `).show();
+    }
 
     // ===== 进度渲染（提交成功或恢复进度共用） =====
     function _RenderProgress(redeem) {
@@ -91,7 +144,7 @@
                     <span class="ln-activate-chip ${meta.cls}">${esc(meta.text)}</span>
                 </strong>
                 ${rows.join('')}
-                <p>${i18n('刷新页面后输入原卡密，点击「验证卡密 / 恢复进度」可随时查看。')}</p>
+                <p>${i18n('刷新页面后输入原卡密，点击「进度查询」可随时查看。')}</p>
             </div>
         `).show();
     }
@@ -143,7 +196,7 @@
         const raw = String($session.val() || '').trim();
 
         if (!secret || secret !== verifiedSecret) {
-            message.error(i18n('请先点击「验证卡密 / 恢复进度」验证卡密'));
+            message.error(i18n('请先点击「进度查询」确认卡密'));
             return;
         }
 

@@ -1,6 +1,6 @@
 #{assign var="lnPage" value="activate"}
 #{include file="./Header.html"}
-<link rel="stylesheet" href="/app/View/User/Theme/LiuNeng/assets/activate.css?build=20260908-activate-2">
+<link rel="stylesheet" href="/app/View/User/Theme/LiuNeng/assets/activate.css?build=20260909-progress-1">
 
 <main class="ln-activate-page">
     <div class="container ln-activate-layout">
@@ -18,7 +18,7 @@
                     <input id="lnActivateSecret" type="text" name="secret" autocomplete="off"
                            placeholder="DREAMER-XXXX-XXXX-XXXX">
                     <button type="button" class="ln-activate-verify">
-                        <i class="fa-duotone fa-regular fa-rotate"></i>#{t("验证卡密 / 恢复进度")}
+                        <i class="fa-duotone fa-regular fa-magnifying-glass"></i>#{t("进度查询")}
                     </button>
                 </div>
                 <div class="ln-activate-verify-state" aria-live="polite"></div>
@@ -67,7 +67,7 @@
                 <li>#{t("卡密仅在 Dreamer Labs 页面内兑换，不需要跳转其他站点。")}</li>
                 <li>#{t("只使用你自己的 ChatGPT 账户；官方风控要求手机号或身份验证时，需要由你自行完成。")}</li>
                 <li>#{t("提交后卡密会进入处理队列，请不要重复提交同一张卡。")}</li>
-                <li>#{t("刷新页面会恢复进度：换设备后输入原卡密，点击「验证卡密 / 恢复进度」。")}</li>
+                <li>#{t("刷新或换设备后，输入原卡密并点击「进度查询」即可继续查看。")}</li>
             </ul>
             <div class="ln-activate-tip">
                 <i class="fa-duotone fa-regular fa-lock-keyhole"></i>
@@ -77,5 +77,5 @@
     </div>
 </main>
 
-#{ready("/assets/user/controller/index/activate.js?build=20260908-activate-2")}
+#{ready("/assets/user/controller/index/activate.js?build=20260909-progress-1")}
 #{include file="./Footer.html"}
