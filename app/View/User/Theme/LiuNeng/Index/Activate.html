@@ -1,6 +1,6 @@
 #{assign var="lnPage" value="activate"}
 #{include file="./Header.html"}
-<link rel="stylesheet" href="/app/View/User/Theme/LiuNeng/assets/activate.css?build=20260909-progress-1">
+<link rel="stylesheet" href="/app/View/User/Theme/LiuNeng/assets/activate.css?build=20260909-loading-1">
 
 <main class="ln-activate-page">
     <div class="container ln-activate-layout">
@@ -11,7 +11,7 @@
             <div class="ln-activate-step">
                 <div class="ln-activate-step__head">
                     <span class="ln-activate-step__no">1</span>
-                    <strong>#{t("验证卡密")}</strong>
+                    <strong>#{t("进度查询")}</strong>
                 </div>
                 <label for="lnActivateSecret">#{t("Dreamer Labs 卡密")}</label>
                 <div class="ln-activate-verify-row">
@@ -77,5 +77,5 @@
     </div>
 </main>
 
-#{ready("/assets/user/controller/index/activate.js?build=20260909-redeem-1")}
+#{ready("/assets/user/controller/index/activate.js?build=20260909-loading-1")}
 #{include file="./Footer.html"}

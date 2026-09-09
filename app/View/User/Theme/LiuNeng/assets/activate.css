@@ -139,6 +139,18 @@
 .ln-activate-verify[disabled],
 .ln-activate-submit[disabled] { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
 
+.ln-activate-verify.is-loading i,
+.ln-activate-submit.is-loading i { animation: ln-activate-spin .72s linear infinite; }
+
+@keyframes ln-activate-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ln-activate-verify.is-loading i,
+    .ln-activate-submit.is-loading i { animation-duration: 1.5s; }
+}
+
 .ln-activate-verify-state { margin-top: 12px; font-size: 13px; }
 
 .ln-activate-verify-state:empty { display: none; }

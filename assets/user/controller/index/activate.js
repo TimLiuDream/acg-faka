@@ -9,6 +9,27 @@
     const $accountBox = $('.ln-activate-account-box');
     const $progress = $('.ln-activate-progress');
 
+    const setButtonLoading = ($button, loading, text) => {
+        if ($button.data('idle-html') == null) {
+            $button.data('idle-html', $button.html());
+        }
+
+        if (loading) {
+            $button
+                .prop('disabled', true)
+                .addClass('is-loading')
+                .attr('aria-busy', 'true')
+                .html(`<i class="fa-duotone fa-regular fa-spinner-third"></i>${esc(text)}`);
+            return;
+        }
+
+        $button
+            .prop('disabled', false)
+            .removeClass('is-loading')
+            .removeAttr('aria-busy')
+            .html($button.data('idle-html'));
+    };
+
     const progressStatusMap = () => ({
         unused: {cls: 'is-queue', text: i18n('未使用')},
         redeeming: {cls: 'is-running', text: i18n('提交中')},
@@ -28,14 +49,14 @@
         }
 
         const $btn = $(this);
-        $btn.attr('disabled', true);
+        setButtonLoading($btn, true, i18n('查询中'));
 
         util.post({
             url: "/user/api/index/redeemProgress",
             data: {secret: secret},
             loader: false,
             done: res => {
-                $btn.attr('disabled', false);
+                setButtonLoading($btn, false);
                 const card = res?.data?.card ?? null;
                 if (!card || !card.status) {
                     $verifyState.html(`<span class="is-bad">${i18n('进度查询服务返回异常，请稍后再试')}</span>`);
@@ -50,12 +71,12 @@
                 _RenderRemoteProgress(card);
             },
             error: res => {
-                $btn.attr('disabled', false);
+                setButtonLoading($btn, false);
                 $verifyState.html(`<span class="is-bad"><i class="fa-duotone fa-regular fa-circle-xmark"></i> ${esc(res?.msg || i18n('未查询到兑换进度'))}</span>`);
                 $progress.hide().empty();
             },
             fail: () => {
-                $btn.attr('disabled', false);
+                setButtonLoading($btn, false);
                 $verifyState.html(`<span class="is-bad">${i18n('网络异常，请稍后再试')}</span>`);
             }
         });
@@ -177,14 +198,14 @@
         }
 
         const $btn = $(this);
-        $btn.attr('disabled', true);
+        setButtonLoading($btn, true, i18n('提交中'));
 
         util.post({
             url: "/user/api/index/redeemSubmit",
             data: {secret: secret, session: raw},
             loader: false,
             done: res => {
-                $btn.attr('disabled', false);
+                setButtonLoading($btn, false);
                 $session.val('');
                 const data = res?.data ?? {};
                 if (data.alreadyUsed) {
@@ -206,11 +227,11 @@
                 }
             },
             error: res => {
-                $btn.attr('disabled', false);
+                setButtonLoading($btn, false);
                 message.error(res?.msg || i18n('提交失败，请稍后再试'));
             },
             fail: () => {
-                $btn.attr('disabled', false);
+                setButtonLoading($btn, false);
                 message.error(i18n('网络异常，请稍后再试'));
             }
         });
