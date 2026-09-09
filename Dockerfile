@@ -43,6 +43,7 @@ RUN sed -i 's/\r$//' /usr/local/bin/acg-faka-entrypoint
 
 RUN mkdir -p \
         /usr/local/share/acg-faka \
+        /usr/local/share/acg-faka/pay \
         /var/www/html/assets/cache \
         /var/www/html/app/Pay \
         /var/www/html/app/Plugin \
@@ -59,6 +60,9 @@ RUN mkdir -p \
         cp /var/www/html/favicon.ico /usr/local/share/acg-faka/favicon.ico; \
         cp /var/www/html/favicon.ico /var/www/html/assets/cache/favicon.ico; \
         ln -sf assets/cache/favicon.ico /var/www/html/favicon.ico; \
+    fi \
+    && if [ -d /var/www/html/app/Pay/Epay ]; then \
+        cp -R /var/www/html/app/Pay/Epay /usr/local/share/acg-faka/pay/Epay; \
     fi \
     && if [ ! -d /var/www/html/vendor ] || [ ! -f /var/www/html/vendor/autoload.php ]; then \
         composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction; \

@@ -1106,10 +1106,6 @@ class Order implements \App\Service\Order
             if (!$order) {
                 self::callbackFail($handle, "not_found", self::CALLBACK_REJECT, $tradeNo, $map, "订单不存在");
             }
-            if ((int)$order->status !== 0) {
-                self::callbackFail($handle, "duplicate", self::CALLBACK_REJECT, $tradeNo, $map, "重复通知，当前订单已支付");
-            }
-
             $paidAmount = $callback['amount'] ?? null;
             if (!is_scalar($paidAmount) || !is_numeric((string)$paidAmount)) {
                 self::callbackFail($handle, "amount", self::CALLBACK_REJECT, $tradeNo, $map, "回调金额不是合法数字");
@@ -1120,6 +1116,11 @@ class Order implements \App\Service\Order
             $actualAmount = (new Decimal((string)$paidAmount, 2))->getAmount();
             if (!hash_equals($expectAmount, $actualAmount)) {
                 self::callbackFail($handle, "amount", self::CALLBACK_REJECT, $tradeNo, $map, "订单金额不匹配");
+            }
+
+            //支付平台在没有收到成功响应时会重复通知。已完成订单仍返回成功，避免无效重试。
+            if ((int)$order->status !== 0) {
+                return;
             }
 
             if ($order->owner != 0 && $owner = User::query()->find($order->owner)) {

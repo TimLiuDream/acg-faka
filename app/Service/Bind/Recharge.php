@@ -190,10 +190,6 @@ class Recharge implements \App\Service\Recharge
                 \App\Service\Bind\Order::callbackFail($handle, "not_found", $reject, $tradeNo, $map, "订单不存在", "CALLBACK-RECHARGE");
             }
 
-            if ((int)$order->status !== 0) {
-                \App\Service\Bind\Order::callbackFail($handle, "duplicate", $reject, $tradeNo, $map, "重复通知，当前订单已支付", "CALLBACK-RECHARGE");
-            }
-
             //同商品订单：先卡类型再用 bcmath 精确比对，(float)数组==1.0 的坑不能踩
             $paidAmount = $callback['amount'] ?? null;
             if (!is_scalar($paidAmount) || !is_numeric((string)$paidAmount)) {
@@ -205,6 +201,11 @@ class Recharge implements \App\Service\Recharge
             $actualAmount = (new \Kernel\Util\Decimal((string)$paidAmount, 2))->getAmount();
             if (!hash_equals($expectAmount, $actualAmount)) {
                 \App\Service\Bind\Order::callbackFail($handle, "amount", $reject, $tradeNo, $map, "订单金额不匹配", "CALLBACK-RECHARGE");
+            }
+
+            //支付平台在没有收到成功响应时会重复通知。已完成订单仍返回成功，避免无效重试。
+            if ((int)$order->status !== 0) {
+                return;
             }
 
             //订单更新

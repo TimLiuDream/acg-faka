@@ -21,6 +21,17 @@ mkdir -p \
     runtime/view \
     runtime/waf
 
+# app/Pay 使用持久化卷。代码随镜像更新，管理员维护的插件排序配置单独保留。
+if [ -d /usr/local/share/acg-faka/pay/Epay ]; then
+    mkdir -p app/Pay/Epay/Config app/Pay/Epay/Impl
+    if [ ! -f app/Pay/Epay/Config/Config.php ]; then
+        cp /usr/local/share/acg-faka/pay/Epay/Config/Config.php app/Pay/Epay/Config/Config.php
+    fi
+    cp /usr/local/share/acg-faka/pay/Epay/Config/Info.php app/Pay/Epay/Config/Info.php
+    cp /usr/local/share/acg-faka/pay/Epay/Config/Submit.php app/Pay/Epay/Config/Submit.php
+    cp -R /usr/local/share/acg-faka/pay/Epay/Impl/. app/Pay/Epay/Impl/
+fi
+
 # 后台“基础设置”会把上传的 Logo 写到 /favicon.ico。
 # 将它落到 assets/cache 这个持久化卷中，避免容器重建后丢失。
 if [ ! -f assets/cache/favicon.ico ]; then
