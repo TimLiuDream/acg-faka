@@ -8,6 +8,7 @@
     const $verifyState = $('.ln-activate-verify-state');
     const $accountBox = $('.ln-activate-account-box');
     const $progress = $('.ln-activate-progress');
+    const $submitState = $('.ln-activate-submit-state');
 
     const setButtonLoading = ($button, loading, text) => {
         if ($button.data('idle-html') == null) {
@@ -28,6 +29,15 @@
             .removeClass('is-loading')
             .removeAttr('aria-busy')
             .html($button.data('idle-html'));
+    };
+
+    const setSubmitState = (type, text) => {
+        const isSuccess = type === 'success';
+        const icon = isSuccess ? 'fa-circle-check' : 'fa-circle-xmark';
+        const className = isSuccess ? 'is-ok' : 'is-bad';
+        $submitState.html(
+            `<span class="${className}"><i class="fa-duotone fa-regular ${icon}"></i> ${esc(text)}</span>`
+        );
     };
 
     const progressStatusMap = () => ({
@@ -173,14 +183,15 @@
     $('.ln-activate-submit').on('click', function () {
         const secret = String($secret.val() || '').trim();
         const raw = String($session.val() || '').trim();
+        $submitState.empty();
 
         if (secret.length < 4) {
-            message.error(i18n('请输入正确的卡密'));
+            setSubmitState('error', i18n('请输入正确的卡密'));
             return;
         }
 
         if (!raw) {
-            message.error(i18n('请粘贴 Session JSON'));
+            setSubmitState('error', i18n('请粘贴 Session JSON'));
             return;
         }
 
@@ -188,12 +199,12 @@
         try {
             json = JSON.parse(raw);
         } catch (e) {
-            message.error(i18n('Session JSON 格式不正确'));
+            setSubmitState('error', i18n('Session JSON 格式不正确'));
             return;
         }
 
         if (!json || Array.isArray(json) || typeof json !== 'object') {
-            message.error(i18n('Session JSON 格式不正确'));
+            setSubmitState('error', i18n('Session JSON 格式不正确'));
             return;
         }
 
@@ -209,11 +220,11 @@
                 $session.val('');
                 const data = res?.data ?? {};
                 if (data.alreadyUsed) {
-                    message.success(i18n('该卡密已使用过，已显示最新进度'));
+                    setSubmitState('success', i18n('该卡密已使用过，已显示最新进度'));
                 } else if (data.resume) {
-                    message.success(i18n('该卡密正在处理中，已显示最新进度'));
+                    setSubmitState('success', i18n('该卡密正在处理中，已显示最新进度'));
                 } else {
-                    message.success(i18n('提交成功，卡密已进入处理队列'));
+                    setSubmitState('success', i18n('提交成功，卡密已进入处理队列'));
                 }
                 if (data.card) {
                     _RenderRemoteProgress(data.card);
@@ -228,11 +239,11 @@
             },
             error: res => {
                 setButtonLoading($btn, false);
-                message.error(res?.msg || i18n('提交失败，请稍后再试'));
+                setSubmitState('error', res?.msg || i18n('提交失败，请稍后再试'));
             },
             fail: () => {
                 setButtonLoading($btn, false);
-                message.error(i18n('网络异常，请稍后再试'));
+                setSubmitState('error', i18n('网络异常，请稍后再试'));
             }
         });
     });

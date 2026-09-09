@@ -151,12 +151,16 @@
     .ln-activate-submit.is-loading i { animation-duration: 1.5s; }
 }
 
-.ln-activate-verify-state { margin-top: 12px; font-size: 13px; }
+.ln-activate-verify-state,
+.ln-activate-submit-state { margin-top: 12px; font-size: 13px; }
 
-.ln-activate-verify-state:empty { display: none; }
+.ln-activate-verify-state:empty,
+.ln-activate-submit-state:empty { display: none; }
 
-.ln-activate-verify-state .is-ok { color: var(--ln-green); font-weight: 750; }
-.ln-activate-verify-state .is-bad { color: #c32b49; font-weight: 750; }
+.ln-activate-verify-state .is-ok,
+.ln-activate-submit-state .is-ok { color: var(--ln-green); font-weight: 750; }
+.ln-activate-verify-state .is-bad,
+.ln-activate-submit-state .is-bad { color: #c32b49; font-weight: 750; }
 .ln-activate-verify-state .is-dim { color: var(--ln-muted); }
 
 /* ===== 账号识别盒 ===== */
