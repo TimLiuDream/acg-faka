@@ -27,6 +27,7 @@ use App\Util\Throttle;
 use App\Util\Tree;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Capsule\Manager as DB;
 use Kernel\Annotation\Inject;
 use Kernel\Annotation\Interceptor;
 use Kernel\Exception\JSONException;
@@ -599,11 +600,13 @@ class Index extends User
         $card = is_array($data['card'] ?? null)
             ? $this->sanitizeRemoteRedeemCard($data['card'], $secret)
             : null;
+        $localCardMarked = $this->markLocalCardsUsed($secret);
 
         return $this->json(data: [
             'alreadyUsed' => (bool)($data['alreadyUsed'] ?? false),
             'resume' => (bool)($data['resume'] ?? false),
             'card' => $card,
+            'localCardMarked' => $localCardMarked,
         ]);
     }
 
@@ -680,6 +683,49 @@ class Index extends User
                 : null;
         }
         return $safeCard;
+    }
+
+    private function markLocalCardsUsed(string $secret): bool
+    {
+        try {
+            [$found, $changed, $commodityIds] = DB::transaction(function () use ($secret): array {
+                $cards = Card::query()
+                    ->where('secret', $secret)
+                    ->lockForUpdate()
+                    ->get(['id', 'commodity_id', 'status', 'purchase_time']);
+
+                $changed = 0;
+                $commodityIds = [];
+                foreach ($cards as $card) {
+                    $commodityIds[] = (int)$card->commodity_id;
+                    if ((int)$card->status === Card::STATUS_USED) {
+                        continue;
+                    }
+                    $card->status = Card::STATUS_USED;
+                    if (empty($card->purchase_time)) {
+                        $card->purchase_time = date('Y-m-d H:i:s');
+                    }
+                    if (!$card->save()) {
+                        throw new \RuntimeException('failed to update local card status');
+                    }
+                    $changed++;
+                }
+
+                return [$cards->count(), $changed, array_values(array_unique($commodityIds))];
+            });
+        } catch (\Throwable) {
+            return false;
+        }
+
+        if ($changed > 0 && $commodityIds !== []) {
+            $reason = 'redeem-use';
+            try {
+                hook(Hook::CARD_CHANGE_AFTER, $commodityIds, $reason);
+            } catch (\Throwable) {
+                // 上游已经受理且本地状态已提交，扩展钩子失败不能诱导用户重复兑换。
+            }
+        }
+        return $found > 0;
     }
 
     private function redeemableCard(string $secret, bool $lockForUpdate = false): Card

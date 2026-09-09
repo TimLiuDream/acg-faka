@@ -109,6 +109,7 @@ const _Dict = new class _Dict extends _DictUtil {
                 {id: 0, "name": format.badge(i18n("未出售"), "a-badge-success")},
                 {id: 1, "name": format.badge(i18n("已出售"), "a-badge-dark")},
                 {id: 2, "name": format.badge(i18n("已锁定"), "a-badge-danger")},
+                {id: 3, "name": format.badge(i18n("已使用"), "a-badge-primary")},
             ],
             "_coupon_mode": [
                 {id: 0, "name": format.badge(i18n("金额"), "a-badge-success")},

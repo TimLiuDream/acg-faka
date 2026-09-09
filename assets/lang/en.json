@@ -4288,6 +4288,8 @@
   "排队中": "Queued",
   "提交中": "Submitting",
   "已作废": "Revoked",
+  "已使用": "Used",
+  "张已使用卡密、": "used keys,",
   "进度查询成功": "Progress retrieved",
   "产品": "Product",
   "前方排队": "Queue Position",

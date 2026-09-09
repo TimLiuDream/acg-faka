@@ -25,6 +25,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class Card extends Model
 {
+    public const STATUS_UNSOLD = 0;
+    public const STATUS_SOLD = 1;
+    public const STATUS_LOCKED = 2;
+    public const STATUS_USED = 3;
+
     /**
      * @var string
      */

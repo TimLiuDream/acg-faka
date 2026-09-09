@@ -66,7 +66,7 @@ CREATE TABLE `__PREFIX__card`  (
                                    `create_time` datetime NOT NULL COMMENT '添加时间',
                                    `purchase_time` datetime NULL DEFAULT NULL COMMENT '购买时间',
                                    `order_id` int UNSIGNED NULL DEFAULT NULL COMMENT '订单id',
-                                   `status` tinyint UNSIGNED NOT NULL DEFAULT 0 COMMENT '状态：0=未出售，1=已出售，2=已锁定',
+                                   `status` tinyint UNSIGNED NOT NULL DEFAULT 0 COMMENT '状态：0=未出售，1=已出售，2=已锁定，3=已使用',
                                    `note` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注信息',
                                    `race` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商品种类',
                                    `sku` json DEFAULT NULL COMMENT 'SKU',

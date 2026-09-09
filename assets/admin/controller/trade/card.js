@@ -26,7 +26,7 @@
                 ? `<br><br>${i18n('另有')} <b>${blockedCount} ${i18n('张')}</b>${i18n('仍被未支付订单预选占用，本次会自动跳过。')}`
                 : '';
             message.ask(
-                `${i18n('将永久删除')} <b>${deletableCount} ${i18n('张卡密')}</b>，${i18n('其中包含')} ${Number(impact.sold_count || 0)} ${i18n('张已售卡密、')}${Number(impact.locked_count || 0)} ${i18n('张锁定卡密、')}${Number(impact.linked_count || 0)} ${i18n('张已关联订单卡密。')}<br><br>${i18n('已售卡密的发货内容仍保留在订单中；卡密记录删除后无法恢复。')}${skipped}`,
+                `${i18n('将永久删除')} <b>${deletableCount} ${i18n('张卡密')}</b>，${i18n('其中包含')} ${Number(impact.sold_count || 0)} ${i18n('张已售卡密、')}${Number(impact.used_count || 0)} ${i18n('张已使用卡密、')}${Number(impact.locked_count || 0)} ${i18n('张锁定卡密、')}${Number(impact.linked_count || 0)} ${i18n('张已关联订单卡密。')}<br><br>${i18n('已售卡密的发货内容仍保留在订单中；卡密记录删除后无法恢复。')}${skipped}`,
                 () => controllerActive && done(),
                 i18n('确认永久删除卡密'),
                 i18n('确认删除')
@@ -659,7 +659,7 @@ ACC_JP_6M_0KLD-22MM-PP31║${i18n('地区')}:${i18n('日区')}·${i18n('时长')
                     const noteText = impact.will_change_note
                         ? `${i18n('并将备注改为')}“${escapeHtml(data.note)}”`
                         : i18n('保持原备注');
-                    const detail = `${scope}${i18n('共命中')} ${Number(impact.total || 0)} ${i18n('张，本次导出')} <b>${Number(impact.count || 0)} ${i18n('张')}</b><br><br>${i18n('未出售')} ${Number(impact.available_count || 0)} ${i18n('张、已售')} ${Number(impact.sold_count || 0)} ${i18n('张、锁定')} ${Number(impact.locked_count || 0)} ${i18n('张')}<br><br>${statusText}；${noteText}。`;
+                    const detail = `${scope}${i18n('共命中')} ${Number(impact.total || 0)} ${i18n('张，本次导出')} <b>${Number(impact.count || 0)} ${i18n('张')}</b><br><br>${i18n('未出售')} ${Number(impact.available_count || 0)} ${i18n('张、已售')} ${Number(impact.sold_count || 0)} ${i18n('张、已使用')} ${Number(impact.used_count || 0)} ${i18n('张、锁定')} ${Number(impact.locked_count || 0)} ${i18n('张')}<br><br>${statusText}；${noteText}。`;
                     const proceed = () => {
                         if (!controllerActive) return;
                         layer.close(index);

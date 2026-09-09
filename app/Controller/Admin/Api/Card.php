@@ -92,6 +92,7 @@ class Card extends Manage
         }
         $soldCount = $cards->filter(static fn($card): bool => (int)$card->status === 1)->count();
         $lockedCount = $cards->filter(static fn($card): bool => (int)$card->status === 2)->count();
+        $usedCount = $cards->filter(static fn($card): bool => (int)$card->status === 3)->count();
         $linkedCount = $cards->filter(static fn($card): bool => (int)$card->order_id > 0)->count();
         $orderReferenceQuery = \App\Model\Order::query()
             ->whereIn('card_id', $ids)
@@ -126,6 +127,7 @@ class Card extends Manage
             'blocked_count' => count($reservedCardIds),
             'sold_count' => $soldCount,
             'locked_count' => $lockedCount,
+            'used_count' => $usedCount,
             'linked_count' => $linkedCount,
             'order_reference_count' => $orderReferences->count(),
             'active_order_reference_count' => $activeReferences->count(),
@@ -167,7 +169,7 @@ class Card extends Manage
                 continue;
             }
             $integer = filter_var($value, FILTER_VALIDATE_INT);
-            if ($integer === false || $integer < 0 || ($column === 'status' && !in_array($integer, [0, 1, 2], true))) {
+            if ($integer === false || $integer < 0 || ($column === 'status' && !in_array($integer, [0, 1, 2, 3], true))) {
                 throw new JSONException('卡密导出筛选条件不正确');
             }
             $hasFilter = true;
@@ -274,7 +276,7 @@ class Card extends Manage
     }
 
     /**
-     * 按 类别/SKU 组合统计卡密库存(未售/锁定/已售)
+     * 按 类别/SKU 组合统计卡密库存(未售/锁定/已售/已使用)
      * @param int $commodityId
      * @return array
      * @throws JSONException
@@ -288,7 +290,7 @@ class Card extends Manage
 
         $list = \App\Model\Card::query()
             ->where("commodity_id", $commodityId)
-            ->selectRaw("race, sku, sum(case when status = 0 then 1 else 0 end) as unsold, sum(case when status = 2 then 1 else 0 end) as locked, sum(case when status = 1 then 1 else 0 end) as sold, count(*) as total")
+            ->selectRaw("race, sku, sum(case when status = 0 then 1 else 0 end) as unsold, sum(case when status = 2 then 1 else 0 end) as locked, sum(case when status = 1 then 1 else 0 end) as sold, sum(case when status = 3 then 1 else 0 end) as used, count(*) as total")
             ->groupBy(["race", "sku"])
             ->orderBy("race")
             ->get()
@@ -298,6 +300,7 @@ class Card extends Manage
                 "unsold" => (int)$item->unsold,
                 "locked" => (int)$item->locked,
                 "sold" => (int)$item->sold,
+                "used" => (int)$item->used,
                 "total" => (int)$item->total,
             ])
             ->toArray();
@@ -677,14 +680,14 @@ class Card extends Manage
             ->orderBy('id', 'asc')
             ->limit($count)
             ->get(['id', 'status', 'order_id']);
-        $statusCounts = [0 => 0, 1 => 0, 2 => 0];
+        $statusCounts = [0 => 0, 1 => 0, 2 => 0, 3 => 0];
         foreach ($rows as $row) {
             $status = (int)$row->status;
             if (array_key_exists($status, $statusCounts)) {
                 $statusCounts[$status]++;
             }
         }
-        if ($options['export_status'] === 3 && ($statusCounts[1] > 0 || $statusCounts[2] > 0)) {
+        if ($options['export_status'] === 3 && ($statusCounts[1] > 0 || $statusCounts[2] > 0 || $statusCounts[3] > 0)) {
             throw new JSONException('标记已售仅允许导出“未出售”卡密，请先调整筛选条件');
         }
 
@@ -695,6 +698,7 @@ class Card extends Manage
             'available_count' => $statusCounts[0],
             'sold_count' => $statusCounts[1],
             'locked_count' => $statusCounts[2],
+            'used_count' => $statusCounts[3],
             'will_change_note' => $options['note'] !== null,
             'export_status' => $options['export_status'],
             'max_count' => self::MAX_EXPORT_COUNT,
