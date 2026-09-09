@@ -2,15 +2,25 @@
 #{include file="./Header.html"}
 <main>
     <section class="ln-hero">
-        <div class="ln-orb ln-orb-one"></div>
-        <div class="ln-orb ln-orb-two"></div>
         <div class="container ln-hero-inner">
-            <div class="ln-eyebrow"><span></span>#{t($setting.hero_eyebrow)}</div>
-            <h1>#{t($setting.hero_title)}<br><em>#{t($setting.hero_accent)}</em></h1>
-            <p>#{t($setting.hero_description)}</p>
-            <div class="ln-hero-actions">
-                <a class="ln-button ln-button-dark" href="#plans">#{t("查看方案")}</a>
+            <div class="ln-hero-copy">
+                <div class="ln-eyebrow"><span></span>#{t($setting.hero_eyebrow)}</div>
+                <h1>#{t($setting.hero_title)}<br><em>#{t($setting.hero_accent)}</em></h1>
+                <p>#{t($setting.hero_description)}</p>
+                <div class="ln-hero-actions">
+                    <a class="ln-button ln-button-dark" href="#plans">#{t("浏览全部服务")}</a>
+                    <span class="ln-hero-meta"><i></i>#{t("下单后可随时查询进度")}</span>
+                </div>
             </div>
+            <aside class="ln-hero-board" aria-label="#{t('服务说明')}">
+                <div class="ln-hero-board__head"><span>Dreamer notes</span><b>01—03</b></div>
+                <dl>
+                    <div><dt>01</dt><dd><strong>#{t("先看清再购买")}</strong><span>#{t("价格与交付方式完整说明")}</span></dd></div>
+                    <div><dt>02</dt><dd><strong>#{t("只填必要信息")}</strong><span>#{t("减少无关资料的收集")}</span></dd></div>
+                    <div><dt>03</dt><dd><strong>#{t("进度一直可查")}</strong><span>#{t("用订单信息跟进交付")}</span></dd></div>
+                </dl>
+                <p>#{t("为白日梦想家准备的 AI 工具箱")}</p>
+            </aside>
         </div>
     </section>
 
@@ -18,10 +28,10 @@
         <div class="container">
             <div class="ln-section-head">
                 <div>
-                    <div class="ln-kicker">PLANS</div>
-                    <h2>#{t("选择适合你的方案。")}</h2>
+                    <div class="ln-kicker">Services</div>
+                    <h2>#{t("今天想用什么？")}</h2>
                 </div>
-                <p>#{t("选择分类并查看当前可购买的服务。价格、库存和交付方式以下单时显示为准。")}</p>
+                <p>#{t("从可用方案中直接选择。库存和最终价格以下单页面为准。")}</p>
             </div>
 
             <div class="ln-category-row">
@@ -49,11 +59,11 @@
 
     <section class="ln-section ln-trust" id="trust">
         <div class="container">
-            <div class="ln-kicker">TRUST BY DESIGN</div>
+            <div class="ln-kicker">A clear process</div>
             <div class="ln-trust-grid">
                 <div class="ln-trust-intro">
-                    <h2>#{t("先讲清楚，再开始。")}</h2>
-                    <p>#{t("服务流程、交付方式和售后边界会在下单前说明，让每一步都有依据。")}</p>
+                    <h2>#{t("简单购买，清楚交付。")}</h2>
+                    <p>#{t("每项服务都标明价格、库存和交付方式，遇到问题也能找到真人支持。")}</p>
                 </div>
                 <article><span>01</span><h3>#{t("账户归你")}</h3><p>#{t("服务在你自己的账户或订单中完成，不提供多人共享账号。")}</p></article>
                 <article><span>02</span><h3>#{t("信息最少化")}</h3><p>#{t("只收集履行订单需要的信息，不索取无关的敏感资料。")}</p></article>
@@ -61,8 +71,8 @@
             </div>
             <div class="ln-process-block">
                 <div class="ln-section-head">
-                    <div><div class="ln-kicker">HOW IT WORKS</div><h2>#{t("四步，始终可见。")}</h2></div>
-                    <p>#{t("从选择方案到完成交付，每一步都有清楚的状态反馈。")}</p>
+                    <div><div class="ln-kicker">Four steps</div><h2>#{t("从选择到交付。")}</h2></div>
+                    <p>#{t("按自己的节奏完成购买，订单状态会及时更新。")}</p>
                 </div>
                 <ol class="ln-steps">
                     <li><b>01</b><span><strong>#{t("选择方案")}</strong><small>#{t("确认商品内容与适用范围")}</small></span></li>
@@ -76,7 +86,7 @@
 
     <section class="ln-section ln-faq">
         <div class="container ln-faq-layout">
-            <div><div class="ln-kicker">FAQ</div><h2>#{t("下单前，需要知道。")}</h2></div>
+            <div><div class="ln-kicker">Help</div><h2>#{t("常见问题")}</h2></div>
             <div class="ln-faq-list">
                 <details><summary>#{t("如何查看订单状态？")}<span>＋</span></summary><p>#{t("进入订单查询页，输入订单号或下单时填写的联系方式即可查询。")}</p></details>
                 <details><summary>#{t("多久可以收到商品？")}<span>＋</span></summary><p>#{t("自动发货商品通常在支付确认后立即交付；人工商品以商品说明为准。")}</p></details>
@@ -86,5 +96,5 @@
     </section>
 
 </main>
-#{ready("/assets/user/controller/index/index.js")}
+#{ready("/assets/user/controller/index/index.js?build=20260909-guest-item-link-1")}
 #{include file="./Footer.html"}

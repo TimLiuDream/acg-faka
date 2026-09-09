@@ -79,6 +79,21 @@
         return shipmentMap[status] || shipmentMap[0];
     }
 
+    function _CardActions(delivered) {
+        if (!delivered) {
+            return '';
+        }
+
+        return `<div class="card-actions">
+          <button type="button" class="card-action-btn copy-card-btn">
+            <i class="fa-duotone fa-regular fa-copy"></i><span>${i18n('复制卡密')}</span>
+          </button>
+          <a class="card-action-btn card-action-btn-primary" href="/user/index/activate">
+            <i class="fa-duotone fa-regular fa-bolt"></i><span>${i18n('激活卡密')}</span>
+          </a>
+        </div>`;
+    }
+
     function _CreateOrderItem(order) {
         let sku = ``, cardContent = ``;
 
@@ -100,7 +115,7 @@
         <div class="password-form">
           <div class="input-group">
             <input type="password" class="form-control card-password-input passin-${order.trade_no}" placeholder="${i18n('请输入查询密码')}">
-            <button type="button" class="btn btn-primary view-card-btn" data-no="${order.trade_no}">
+            <button type="button" class="btn btn-primary view-card-btn" data-no="${order.trade_no}" data-delivered="${order.delivery_status == 1 ? '1' : '0'}">
               <i class="fa-duotone fa-regular fa-eye me-2"></i>${i18n('查看卡密')}
             </button>
           </div>
@@ -114,7 +129,7 @@
         </div>
       </div>`;
             } else {
-                cardContent = `<div class="card-content-no-password"><div class="card-display">${esc(order.secret)}</div></div>${order?.commodity?.leave_message ? `<div class="mt-3">${esc(order?.commodity?.leave_message)}</div>` : ""}`;
+                cardContent = `<div class="card-content-no-password"><div class="card-display">${esc(order.secret)}</div>${_CardActions(order.delivery_status == 1 && !!order.secret)}</div>${order?.commodity?.leave_message ? `<div class="mt-3">${esc(order?.commodity?.leave_message)}</div>` : ""}`;
             }
 
             cardContent = `<div class="card-section">
@@ -199,14 +214,16 @@
         $(`.loading-${tradeNo}`).hide();
     }
 
-    function _ShowCardContent(tradeNo, content, leaveMessage = null) {
+    function _ShowCardContent(tradeNo, content, leaveMessage = null, delivered = false) {
         $(`.card-content-${tradeNo}`).html(`<div class="card-content">
           <div class="card-display">${esc(content)}</div>
+          ${_CardActions(delivered && !!content)}
         </div>${leaveMessage ? `<div class="mt-3">${esc(leaveMessage)}</div>` : ""}`).show();
     }
 
     $(document).off('click', '.view-card-btn').on('click', '.view-card-btn', function () {
         const tradeNo = $(this).data("no");
+        const delivered = $(this).data("delivered") == 1;
         const pass = $(`.passin-${tradeNo}`).val().trim();
 
         if (!pass) {
@@ -226,7 +243,7 @@
             loader: false,
             done: res => {
                 _HidePasswordLoading(tradeNo);
-                _ShowCardContent(tradeNo, res?.data?.secret, res?.data?.leave_message);
+                _ShowCardContent(tradeNo, res?.data?.secret, res?.data?.leave_message, delivered);
             },
             error: res => {
                 message.error(res.msg ?? i18n("未知错误"));
@@ -239,6 +256,19 @@
                 _ShowPasswordInput(tradeNo);
             }
         });
+    });
+
+    $(document).off('click', '.copy-card-btn').on('click', '.copy-card-btn', function () {
+        const secret = $(this).closest('.card-content, .card-content-no-password').find('.card-display').first().text();
+        if (!secret) {
+            return;
+        }
+
+        util.copyTextToClipboard(
+            secret,
+            () => message.success(i18n('卡密已复制')),
+            () => message.error(i18n('复制失败，请手动选择内容'))
+        );
     });
 
     $('.order-query-form').on('submit', function (e) {

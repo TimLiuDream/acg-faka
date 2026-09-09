@@ -10,7 +10,7 @@ interface Config
     public const INFO = [
         'NAME' => 'Dreamer Labs',
         'AUTHOR' => 'TimLiu',
-        'VERSION' => '0.1.0',
+        'VERSION' => '0.2.0',
         'WEB_SITE' => '#',
         'DESCRIPTION' => '面向 AI 会员与数字服务的清爽品牌主题',
         'RENDER' => Render::ENGINE_SMARTY,
@@ -21,19 +21,19 @@ interface Config
             'title' => '首页眉题',
             'name' => 'hero_eyebrow',
             'type' => 'input',
-            'placeholder' => '例如：AI MEMBERSHIP SERVICE',
+            'placeholder' => '例如：Dreamer Labs 数字服务',
         ],
         [
             'title' => '首页主标题',
             'name' => 'hero_title',
             'type' => 'input',
-            'placeholder' => '例如：更简单地使用',
+            'placeholder' => '例如：把好用的 AI，',
         ],
         [
             'title' => '首页强调标题',
             'name' => 'hero_accent',
             'type' => 'input',
-            'placeholder' => '例如：更强大的 AI。',
+            'placeholder' => '例如：带进每一天。',
         ],
         [
             'title' => '首页简介',

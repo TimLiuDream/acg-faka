@@ -20,12 +20,26 @@ class PurchaseRecord extends User
     #[Inject]
     private Query $query;
 
+    #[Inject]
+    private \App\Service\Order $order;
+
     /**
      * @return array
      */
     public function data(): array
     {
         $map = $this->request->post();
+        $tradeNo = trim((string)($map['equal-trade_no'] ?? ''));
+        if (preg_match('/^\d{18}$/D', $tradeNo)) {
+            $pendingOrder = \App\Model\Order::with(['pay'])
+                ->where('owner', $this->getUser()->id)
+                ->where('trade_no', $tradeNo)
+                ->where('status', 0)
+                ->first();
+            if ($pendingOrder) {
+                $this->order->syncPaymentStatus($pendingOrder);
+            }
+        }
         $get = new Get(\App\Model\Order::class);
         $get->setPaginate((int)$this->request->post("page"), (int)$this->request->post("limit"));
         $get->setOrderBy("id", "desc");

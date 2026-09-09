@@ -183,6 +183,46 @@ final class Csp
 
     private static ?array $extraCache = null;
 
+    /** @var array<string, array<string, true>> 当前请求临时放行的、经过校验的外部源 */
+    private static array $requestSources = [];
+
+    /**
+     * 允许当前响应把支付表单提交到指定 HTTPS 地址。
+     *
+     * 支付的 submit 地址在创建订单后才确定，不能静态写进全站 CSP。这里只提取
+     * scheme + host + port，既允许该支付网关接收表单，也不会放宽到整个 https:。
+     */
+    public static function allowFormAction(string $url): void
+    {
+        $url = trim($url);
+        $parts = parse_url($url);
+        if (
+            $url === ''
+            || filter_var($url, FILTER_VALIDATE_URL) === false
+            || !is_array($parts)
+            || strtolower((string)($parts['scheme'] ?? '')) !== 'https'
+            || empty($parts['host'])
+            || isset($parts['user'], $parts['pass'])
+        ) {
+            return;
+        }
+
+        $origin = 'https://' . strtolower((string)$parts['host']);
+        if (isset($parts['port'])) {
+            $origin .= ':' . (int)$parts['port'];
+        }
+        if (!preg_match(self::SOURCE_PATTERN, $origin)) {
+            return;
+        }
+
+        self::$requestSources['form-action'][$origin] = true;
+
+        //Kernel 已经写过基础策略；控制器仍在输出正文之前，可以用本请求的精确来源替换它。
+        if (self::enabled() && !headers_sent()) {
+            header(self::header() . ': ' . self::policy());
+        }
+    }
+
     /**
      * 收集插件声明的放行域名。任何一步出错都退回空清单——策略头绝不能因为
      * 某个插件写错而发不出去。
@@ -226,9 +266,13 @@ final class Csp
     public static function policy(): string
     {
         $extra = self::extraSources();
-        $directive = static fn(string $name, string $value): string => trim(
-            $name . ' ' . $value . ' ' . implode(' ', $extra[$name] ?? [])
-        );
+        $directive = static function (string $name, string $value) use ($extra): string {
+            $sources = array_values(array_unique(array_merge(
+                $extra[$name] ?? [],
+                array_keys(self::$requestSources[$name] ?? [])
+            )));
+            return trim($name . ' ' . $value . ' ' . implode(' ', $sources));
+        };
 
         return implode('; ', [
             "default-src 'self'",
@@ -247,7 +291,7 @@ final class Csp
             "frame-ancestors 'self'",
             "object-src 'none'",
             "base-uri 'self'",
-            "form-action 'self'",
+            $directive('form-action', "'self'"),
             'report-uri ' . self::REPORT_PATH,
         ]);
     }

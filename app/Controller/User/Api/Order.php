@@ -202,7 +202,12 @@ class Order extends User
         if (Throttle::tooMany("state:ip:" . Client::getAddress(), 120, 600)) {
             throw new JSONException("请求过于频繁，请稍后再试");
         }
-        $order = \App\Model\Order::query()->where("trade_no", $tradeNo)->first(['id', 'trade_no', 'amount', 'status']);
+        $order = \App\Model\Order::with(['pay'])->where("trade_no", $tradeNo)->first(['id', 'trade_no', 'amount', 'gateway_amount', 'pay_id', 'status']);
+        if ($order && (int)$order->status === 0) {
+            $this->order->syncPaymentStatus($order);
+            // 重新只取状态接口允许回显的字段，避免 refresh() 把卡密、查询密码等字段带进响应。
+            $order = \App\Model\Order::query()->where("trade_no", $tradeNo)->first(['id', 'trade_no', 'amount', 'status']);
+        }
         if (!$order) {
             $order = UserRecharge::query()->where("trade_no", $tradeNo)->first(['id', 'trade_no', 'amount', 'status']);
         }

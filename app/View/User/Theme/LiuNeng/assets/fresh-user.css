@@ -1,0 +1,380 @@
+/* Dreamer Labs member area — fresh paper theme */
+:root[data-theme="light"] {
+    --md-primary: #2f7662;
+    --md-primary-rgb: 47, 118, 98;
+    --md-on-primary: #ffffff;
+    --uc-primary-deep: #235849;
+    --uc-ink: #18332c;
+    --uc-ink-med: #65776f;
+    --uc-ink-dis: #8a9a93;
+    --uc-focus: #4f8f7b;
+    --uc-focus-rgb: 79, 143, 123;
+    --glass-bg: #ffffff;
+    --glass-bg-strong: rgba(255, 255, 255, .96);
+    --glass-bg-soft: #f3f7f4;
+    --glass-border: #dfe8e3;
+    --glass-border-soft: #e7eeea;
+    --glass-hi: none;
+    --glass-filter: none;
+    --glass-filter-strong: blur(16px);
+    --glass-shadow: 0 16px 42px rgba(35, 79, 65, .07);
+    --glass-shadow-lg: 0 24px 64px rgba(35, 79, 65, .12);
+    --glass-radius: 18px;
+    --glass-radius-sm: 12px;
+    --uc-field-bg: #f6f9f7;
+    --ln-bg: #f5f8f6;
+    --ln-surface: #ffffff;
+    --ln-ink: #18332c;
+    --ln-muted: #687a72;
+    --ln-line: #dfe8e3;
+    --ln-soft: #edf4f0;
+    --ln-blue: #2f7662;
+    --ln-purple: #2f7662;
+    --ln-shadow: 0 16px 44px rgba(35, 79, 65, .07);
+    --ln-wallet-surface: #eaf3ee;
+    --ln-wallet-ink: #1f493d;
+    --ln-wallet-muted: #617970;
+    --ln-wallet-faint: #7b9087;
+    --ln-wallet-soft: rgba(255, 255, 255, .58);
+    --ln-wallet-soft-strong: rgba(255, 255, 255, .78);
+    --ln-wallet-line: #ccdfd5;
+    --ln-wallet-ring: #bad4c7;
+    --ln-wallet-shadow: none;
+    --ln-card-surface: #ffffff;
+    --ln-card-ink: #18332c;
+    --ln-card-muted: #687a72;
+    --ln-card-line: #dfe8e3;
+    --ln-card-ring: #c6dbd0;
+    --ln-card-shadow: none;
+    --ln-ticket-bg: #f5f8f6;
+    --ln-ticket-surface: #ffffff;
+    --ln-ticket-ink: #18332c;
+    --ln-ticket-muted: #687a72;
+    --ln-ticket-faint: #87978f;
+    --ln-ticket-line: #dfe8e3;
+    --ln-ticket-soft: #edf4f0;
+    --ln-ticket-blue: #2f7662;
+    --ln-ticket-shadow: none;
+}
+
+/* ===== 暗色模式：与亮色同套绿色品牌，压暗纸感 ===== */
+:root[data-theme="dark"] {
+    --md-primary: #4d9c82;
+    --md-primary-rgb: 77, 156, 130;
+    --md-on-primary: #08130f;
+    --uc-primary-deep: #8fd0b8;
+    --uc-ink: #e3ece7;
+    --uc-ink-med: #9db1a8;
+    --uc-ink-dis: #71857c;
+    --uc-focus: #6cb89d;
+    --uc-focus-rgb: 108, 184, 157;
+    --glass-bg: rgba(21, 29, 26, .82);
+    --glass-bg-strong: rgba(24, 33, 29, .96);
+    --glass-bg-soft: #1a2420;
+    --glass-border: #26332d;
+    --glass-border-soft: #202b26;
+    --glass-hi: inset 0 1px 0 rgba(255, 255, 255, .05);
+    --glass-filter: saturate(115%) blur(18px);
+    --glass-filter-strong: saturate(120%) blur(22px);
+    --glass-shadow: 0 16px 42px rgba(0, 0, 0, .38);
+    --glass-shadow-lg: 0 24px 64px rgba(0, 0, 0, .46);
+    --glass-radius: 18px;
+    --glass-radius-sm: 12px;
+    --uc-field-bg: #1a2420;
+    --ln-bg: #101614;
+    --ln-surface: #151d1a;
+    --ln-ink: #e3ece7;
+    --ln-muted: #94a69d;
+    --ln-line: #26332d;
+    --ln-soft: #1a2420;
+    --ln-blue: #4d9c82;
+    --ln-purple: #4d9c82;
+    --ln-shadow: 0 18px 48px rgba(0, 0, 0, .4);
+    --ln-wallet-surface: #1b2823;
+    --ln-wallet-ink: #dcebe3;
+    --ln-wallet-muted: #93a69d;
+    --ln-wallet-faint: #74887e;
+    --ln-wallet-soft: rgba(255, 255, 255, .06);
+    --ln-wallet-soft-strong: rgba(255, 255, 255, .12);
+    --ln-wallet-line: #2e4038;
+    --ln-wallet-ring: #33463d;
+    --ln-wallet-shadow: none;
+    --ln-card-surface: #151d1a;
+    --ln-card-ink: #e3ece7;
+    --ln-card-muted: #94a69d;
+    --ln-card-line: #26332d;
+    --ln-card-ring: #2e4038;
+    --ln-card-shadow: none;
+    --ln-ticket-bg: #121916;
+    --ln-ticket-surface: #151d1a;
+    --ln-ticket-ink: #e3ece7;
+    --ln-ticket-muted: #94a69d;
+    --ln-ticket-faint: #74887e;
+    --ln-ticket-line: #26332d;
+    --ln-ticket-soft: #1a2420;
+    --ln-ticket-blue: #4d9c82;
+    --ln-ticket-shadow: none;
+}
+
+:root[data-theme="dark"] body.dreamer-ui {
+    color: #e3ece7;
+    background: #101614 !important;
+}
+:root[data-theme="dark"] body.dreamer-ui .bg-content.uc-bg {
+    background: #101614 !important;
+}
+:root[data-theme="dark"] body.dreamer-ui .uc-nav-wrap { padding-top: 12px; }
+:root[data-theme="dark"] body.dreamer-ui .uc-nav {
+    height: 60px;
+    border: 1px solid #26332d;
+    border-radius: 16px;
+    background: rgba(21, 29, 26, .92);
+    box-shadow: 0 10px 32px rgba(0, 0, 0, .32);
+}
+:root[data-theme="dark"] body.dreamer-ui .uc-brand__logo { border-radius: 9px; box-shadow: 0 5px 14px rgba(0, 0, 0, .3); }
+:root[data-theme="dark"] body.dreamer-ui .uc-brand__name { color: #e3ece7; font-weight: 740; }
+:root[data-theme="dark"] body.dreamer-ui .uc-nav__item.active {
+    color: #fff;
+    background: #2f7662;
+    box-shadow: none;
+}
+:root[data-theme="dark"] body.dreamer-ui .uc-nav__item:hover,
+:root[data-theme="dark"] body.dreamer-ui .uc-nav__link:hover { color: #8fd0b8; background: #1a2420; }
+:root[data-theme="dark"] body.dreamer-ui .uc-user__btn { border-color: #26332d; background: #1a2420; }
+:root[data-theme="dark"] body.dreamer-ui .uc-user__avatar { border-radius: 10px; box-shadow: none; }
+:root[data-theme="dark"] body.dreamer-ui .uc-submenu,
+:root[data-theme="dark"] body.dreamer-ui .uc-message-dropdown { border-color: #26332d; background: #151d1a; box-shadow: 0 22px 60px rgba(0, 0, 0, .45); }
+:root[data-theme="dark"] body.dreamer-ui .uc-card {
+    border-color: #26332d;
+    background: #151d1a;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+:root[data-theme="dark"] body.dreamer-ui .uc-card__head { border-bottom-color: #202b26; }
+:root[data-theme="dark"] body.dreamer-ui .uc-cta,
+:root[data-theme="dark"] body.dreamer-ui .layui-btn-normal,
+:root[data-theme="dark"] body.dreamer-ui .button-add { border-radius: 10px !important; background: #2f7662 !important; box-shadow: none !important; }
+:root[data-theme="dark"] body.dreamer-ui input:focus,
+:root[data-theme="dark"] body.dreamer-ui textarea:focus,
+:root[data-theme="dark"] body.dreamer-ui select:focus { border-color: #4d9c82 !important; box-shadow: 0 0 0 3px rgba(77, 156, 130, .16) !important; }
+
+:root[data-theme="dark"] body.dreamer-ui .ln-dashboard,
+:root[data-theme="dark"] body.dreamer-ui .ln-security,
+:root[data-theme="dark"] body.dreamer-ui .ln-ticket-page { max-width: 1180px; padding-top: 32px; }
+:root[data-theme="dark"] body.dreamer-ui .ln-dashboard-eyebrow,
+:root[data-theme="dark"] body.dreamer-ui .ln-sec-eyebrow,
+:root[data-theme="dark"] body.dreamer-ui .ln-ticket-eyebrow { color: #7e948a; font-weight: 700; letter-spacing: .09em; }
+:root[data-theme="dark"] body.dreamer-ui .ln-dashboard-hero,
+:root[data-theme="dark"] body.dreamer-ui .ln-sec-hero,
+:root[data-theme="dark"] body.dreamer-ui .ln-ticket-hero {
+    min-height: 320px;
+    border-color: #26332d;
+    border-radius: 22px 22px 8px 22px;
+    background: #151d1a;
+    box-shadow: none;
+}
+:root[data-theme="dark"] body.dreamer-ui .ln-dashboard-hero h1,
+:root[data-theme="dark"] body.dreamer-ui .ln-sec-hero h1,
+:root[data-theme="dark"] body.dreamer-ui .ln-ticket-page h1 { font-weight: 740; letter-spacing: -.045em; }
+:root[data-theme="dark"] body.dreamer-ui .ln-dashboard-hero h1 span,
+:root[data-theme="dark"] body.dreamer-ui .ln-sec-hero h1 span { color: #6fbd9e; background: none; }
+:root[data-theme="dark"] body.dreamer-ui .ln-dashboard-identity__avatar,
+:root[data-theme="dark"] body.dreamer-ui .ln-sec-identity__avatar { border-radius: 16px; box-shadow: 0 0 0 1px #26332d; }
+:root[data-theme="dark"] body.dreamer-ui .ln-wallet,
+:root[data-theme="dark"] body.dreamer-ui .ln-sec-summary { border: 1px solid #2e4038; border-radius: 18px 18px 6px 18px; background: #1b2823; box-shadow: none; }
+:root[data-theme="dark"] body.dreamer-ui .ln-dashboard-button--primary,
+:root[data-theme="dark"] body.dreamer-ui .ln-sec-button--primary { border-color: #2f7662; background: #2f7662; box-shadow: none; }
+:root[data-theme="dark"] body.dreamer-ui .ln-metric,
+:root[data-theme="dark"] body.dreamer-ui .ln-dashboard-panel,
+:root[data-theme="dark"] body.dreamer-ui .ln-sec-panel {
+    border-color: #26332d;
+    border-radius: 17px;
+    background: #151d1a;
+    box-shadow: none;
+}
+:root[data-theme="dark"] body.dreamer-ui .ln-metric__icon,
+:root[data-theme="dark"] body.dreamer-ui .ln-sec-tab.is-active { color: #6fbd9e; background: #1b2823; }
+:root[data-theme="dark"] body.dreamer-ui .ln-sec-input,
+:root[data-theme="dark"] body.dreamer-ui .ln-sec-captcha-row { border-color: #26332d; border-radius: 11px; background: #1a2420; }
+
+:root[data-theme="dark"] body.dreamer-ui .ln-ticket-create {
+    color: #9ed3bc;
+    border: 1px solid #2e4038;
+    border-radius: 18px 18px 6px 18px;
+    background: #1b2823;
+}
+:root[data-theme="dark"] body.dreamer-ui .ln-ticket-create::before,
+:root[data-theme="dark"] body.dreamer-ui .ln-ticket-create::after { border-color: rgba(255, 255, 255, .05); }
+:root[data-theme="dark"] body.dreamer-ui .ln-ticket-card,
+:root[data-theme="dark"] body.dreamer-ui .ln-ticket-create-page .uc-ticket-form {
+    border-color: #26332d;
+    border-radius: 18px;
+    background: #151d1a;
+    box-shadow: none;
+}
+:root[data-theme="dark"] body.dreamer-ui .ln-ticket-create-page .uc-ticket-step { color: #6fbd9e; background: #1b2823; }
+:root[data-theme="dark"] body.dreamer-ui .ln-ticket-create-page .uc-ticket-type.is-active,
+:root[data-theme="dark"] body.dreamer-ui .ln-ticket-create-page .uc-ticket-priority.is-active { border-color: #3f5a4e; background: #1b2823; box-shadow: none; }
+:root[data-theme="dark"] body.dreamer-ui .ln-ticket-create-page .uc-ticket-submit { border-radius: 10px; background: #2f7662; box-shadow: none; }
+
+:root[data-theme="dark"] body.dreamer-ui .bootstrap-table .fixed-table-container,
+:root[data-theme="dark"] body.dreamer-ui .bootstrap-table .fixed-table-body { background: #151d1a; }
+:root[data-theme="dark"] body.dreamer-ui .bootstrap-table thead th { color: #94a69d; background: #121916; }
+:root[data-theme="dark"] body.dreamer-ui .bootstrap-table tbody tr:hover { background: #1a2420; }
+:root[data-theme="dark"] body.dreamer-ui .page-link.active,
+:root[data-theme="dark"] body.dreamer-ui .pagination .active > a { border-color: #2f7662; background: #2f7662; }
+
+:root[data-theme="dark"] body.dreamer-ui *:focus-visible { outline: 3px solid rgba(77, 156, 130, .3); outline-offset: 2px; }
+
+@media (max-width: 992px) {
+    :root[data-theme="dark"] body.dreamer-ui .uc-nav { border-radius: 14px; }
+    :root[data-theme="dark"] body.dreamer-ui .uc-drawer { border-right: 1px solid #26332d; background: #121916; }
+    :root[data-theme="dark"] body.dreamer-ui .uc-drawer__link { border-radius: 10px; }
+    :root[data-theme="dark"] body.dreamer-ui .uc-drawer__link.active { color: #8fd0b8; background: #1b2823; }
+}
+
+@media (max-width: 720px) {
+    :root[data-theme="dark"] body.dreamer-ui .ln-dashboard,
+    :root[data-theme="dark"] body.dreamer-ui .ln-security,
+    :root[data-theme="dark"] body.dreamer-ui .ln-ticket-page { padding-top: 18px; }
+    :root[data-theme="dark"] body.dreamer-ui .ln-dashboard-hero,
+    :root[data-theme="dark"] body.dreamer-ui .ln-sec-hero,
+    :root[data-theme="dark"] body.dreamer-ui .ln-ticket-hero { min-height: 0; padding: 25px 20px; border-radius: 18px 18px 6px 18px; }
+}
+
+:root[data-theme="light"] body.dreamer-ui {
+    color: #18332c;
+    background: #f5f8f6 !important;
+    font-family: "HarmonyOS Sans SC", "MiSans", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+:root[data-theme="light"] body.dreamer-ui .bg-content.uc-bg {
+    min-height: 100dvh;
+    background: #f5f8f6 !important;
+}
+:root[data-theme="light"] body.dreamer-ui .uc-nav-wrap { padding-top: 12px; }
+:root[data-theme="light"] body.dreamer-ui .uc-nav {
+    height: 60px;
+    border: 1px solid #dfe8e3;
+    border-radius: 16px;
+    background: rgba(255,255,255,.95);
+    box-shadow: 0 10px 32px rgba(35,79,65,.07);
+}
+:root[data-theme="light"] body.dreamer-ui .uc-brand__logo { border-radius: 9px; box-shadow: 0 5px 14px rgba(47,118,98,.14); }
+:root[data-theme="light"] body.dreamer-ui .uc-brand__name { color: #18332c; font-weight: 740; }
+:root[data-theme="light"] body.dreamer-ui .uc-nav__item,
+:root[data-theme="light"] body.dreamer-ui .uc-nav__link,
+:root[data-theme="light"] body.dreamer-ui .uc-user__btn,
+:root[data-theme="light"] body.dreamer-ui .uc-theme-btn { border-radius: 10px; }
+:root[data-theme="light"] body.dreamer-ui .uc-nav__item.active {
+    color: #fff;
+    background: #2f7662;
+    box-shadow: none;
+}
+:root[data-theme="light"] body.dreamer-ui .uc-nav__item:hover,
+:root[data-theme="light"] body.dreamer-ui .uc-nav__link:hover { color: #235849; background: #edf4f0; }
+:root[data-theme="light"] body.dreamer-ui .uc-user__btn { border-color: #dfe8e3; background: #f7faf8; }
+:root[data-theme="light"] body.dreamer-ui .uc-user__avatar { border-radius: 10px; box-shadow: none; }
+:root[data-theme="light"] body.dreamer-ui .uc-submenu,
+:root[data-theme="light"] body.dreamer-ui .uc-message-dropdown { border-color: #dfe8e3; background: #fff; box-shadow: 0 22px 60px rgba(35,79,65,.13); }
+:root[data-theme="light"] body.dreamer-ui .uc-card {
+    border-color: #dfe8e3;
+    background: #fff;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+:root[data-theme="light"] body.dreamer-ui .uc-card__head { border-bottom-color: #e7eeea; }
+:root[data-theme="light"] body.dreamer-ui .uc-cta,
+:root[data-theme="light"] body.dreamer-ui .layui-btn-normal,
+:root[data-theme="light"] body.dreamer-ui .button-add { border-radius: 10px !important; background: #2f7662 !important; box-shadow: none !important; }
+:root[data-theme="light"] body.dreamer-ui input:focus,
+:root[data-theme="light"] body.dreamer-ui textarea:focus,
+:root[data-theme="light"] body.dreamer-ui select:focus { border-color: #69a18f !important; box-shadow: 0 0 0 3px rgba(47,118,98,.1) !important; }
+
+/* Custom member pages */
+:root[data-theme="light"] body.dreamer-ui .ln-dashboard,
+:root[data-theme="light"] body.dreamer-ui .ln-security,
+:root[data-theme="light"] body.dreamer-ui .ln-ticket-page { max-width: 1180px; padding-top: 32px; }
+:root[data-theme="light"] body.dreamer-ui .ln-dashboard-eyebrow,
+:root[data-theme="light"] body.dreamer-ui .ln-sec-eyebrow,
+:root[data-theme="light"] body.dreamer-ui .ln-ticket-eyebrow { color: #72867d; font-weight: 700; letter-spacing: .09em; }
+:root[data-theme="light"] body.dreamer-ui .ln-dashboard-hero,
+:root[data-theme="light"] body.dreamer-ui .ln-sec-hero,
+:root[data-theme="light"] body.dreamer-ui .ln-ticket-hero {
+    min-height: 320px;
+    border-color: #dfe8e3;
+    border-radius: 22px 22px 8px 22px;
+    background: #fff;
+    box-shadow: none;
+}
+:root[data-theme="light"] body.dreamer-ui .ln-dashboard-hero h1,
+:root[data-theme="light"] body.dreamer-ui .ln-sec-hero h1,
+:root[data-theme="light"] body.dreamer-ui .ln-ticket-page h1 { font-weight: 740; letter-spacing: -.045em; }
+:root[data-theme="light"] body.dreamer-ui .ln-dashboard-hero h1 span,
+:root[data-theme="light"] body.dreamer-ui .ln-sec-hero h1 span { color: #2f7662; background: none; }
+:root[data-theme="light"] body.dreamer-ui .ln-dashboard-identity__avatar,
+:root[data-theme="light"] body.dreamer-ui .ln-sec-identity__avatar { border-radius: 16px; box-shadow: 0 0 0 1px #dfe8e3; }
+:root[data-theme="light"] body.dreamer-ui .ln-wallet,
+:root[data-theme="light"] body.dreamer-ui .ln-sec-summary { border: 1px solid #ccdfd5; border-radius: 18px 18px 6px 18px; background: #eaf3ee; box-shadow: none; }
+:root[data-theme="light"] body.dreamer-ui .ln-dashboard-button--primary,
+:root[data-theme="light"] body.dreamer-ui .ln-sec-button--primary { border-color: #2f7662; background: #2f7662; box-shadow: none; }
+:root[data-theme="light"] body.dreamer-ui .ln-metric,
+:root[data-theme="light"] body.dreamer-ui .ln-dashboard-panel,
+:root[data-theme="light"] body.dreamer-ui .ln-sec-panel {
+    border-color: #dfe8e3;
+    border-radius: 17px;
+    background: #fff;
+    box-shadow: none;
+}
+:root[data-theme="light"] body.dreamer-ui .ln-metric__icon,
+:root[data-theme="light"] body.dreamer-ui .ln-sec-tab.is-active { color: #2f7662; background: #eaf3ee; }
+:root[data-theme="light"] body.dreamer-ui .ln-sec-input,
+:root[data-theme="light"] body.dreamer-ui .ln-sec-captcha-row { border-color: #dfe8e3; border-radius: 11px; background: #f7faf8; }
+
+/* Tickets */
+:root[data-theme="light"] body.dreamer-ui .ln-ticket-create {
+    color: #244b3e;
+    border: 1px solid #cfe0d7;
+    border-radius: 18px 18px 6px 18px;
+    background: #eaf3ee;
+}
+:root[data-theme="light"] body.dreamer-ui .ln-ticket-create::before,
+:root[data-theme="light"] body.dreamer-ui .ln-ticket-create::after { border-color: rgba(47,118,98,.08); }
+:root[data-theme="light"] body.dreamer-ui .ln-ticket-card,
+:root[data-theme="light"] body.dreamer-ui .ln-ticket-create-page .uc-ticket-form {
+    border-color: #dfe8e3;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: none;
+}
+:root[data-theme="light"] body.dreamer-ui .ln-ticket-create-page .uc-ticket-step { color: #2f7662; background: #edf4f0; }
+:root[data-theme="light"] body.dreamer-ui .ln-ticket-create-page .uc-ticket-type.is-active,
+:root[data-theme="light"] body.dreamer-ui .ln-ticket-create-page .uc-ticket-priority.is-active { border-color: #75a794; background: #f0f7f3; box-shadow: none; }
+:root[data-theme="light"] body.dreamer-ui .ln-ticket-create-page .uc-ticket-submit { border-radius: 10px; background: #2f7662; box-shadow: none; }
+
+/* Tables and empty states */
+:root[data-theme="light"] body.dreamer-ui .bootstrap-table .fixed-table-container,
+:root[data-theme="light"] body.dreamer-ui .bootstrap-table .fixed-table-body { background: #fff; }
+:root[data-theme="light"] body.dreamer-ui .bootstrap-table thead th { color: #64766f; background: #f5f8f6; }
+:root[data-theme="light"] body.dreamer-ui .bootstrap-table tbody tr:hover { background: #f3f8f5; }
+:root[data-theme="light"] body.dreamer-ui .page-link.active,
+:root[data-theme="light"] body.dreamer-ui .pagination .active > a { border-color: #2f7662; background: #2f7662; }
+
+:root[data-theme="light"] body.dreamer-ui *:focus-visible { outline: 3px solid rgba(47,118,98,.25); outline-offset: 2px; }
+
+@media (max-width: 992px) {
+    :root[data-theme="light"] body.dreamer-ui .uc-nav { border-radius: 14px; }
+    :root[data-theme="light"] body.dreamer-ui .uc-drawer { border-right: 1px solid #dfe8e3; background: #f9fbfa; }
+    :root[data-theme="light"] body.dreamer-ui .uc-drawer__link { border-radius: 10px; }
+    :root[data-theme="light"] body.dreamer-ui .uc-drawer__link.active { color: #235849; background: #eaf3ee; }
+}
+
+@media (max-width: 720px) {
+    :root[data-theme="light"] body.dreamer-ui .ln-dashboard,
+    :root[data-theme="light"] body.dreamer-ui .ln-security,
+    :root[data-theme="light"] body.dreamer-ui .ln-ticket-page { padding-top: 18px; }
+    :root[data-theme="light"] body.dreamer-ui .ln-dashboard-hero,
+    :root[data-theme="light"] body.dreamer-ui .ln-sec-hero,
+    :root[data-theme="light"] body.dreamer-ui .ln-ticket-hero { min-height: 0; padding: 25px 20px; border-radius: 18px 18px 6px 18px; }
+}

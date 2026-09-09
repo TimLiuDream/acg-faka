@@ -455,6 +455,15 @@ class Index extends User
             throw new JSONException("请求过于频繁，请稍后再试");
         }
 
+        // 支付完成回跳时，本地开发地址通常收不到平台异步通知。
+        // 对精确订单号做一次服务端主动查单，确认订单号与金额后再完成订单。
+        if (preg_match('/^\d{18}$/D', $keywords)) {
+            $pendingOrder = Order::with(['pay'])->where('trade_no', $keywords)->where('status', 0)->first();
+            if ($pendingOrder) {
+                $this->order->syncPaymentStatus($pendingOrder);
+            }
+        }
+
         $get = new Get(Order::class);
         $get->setPaginate((int)$this->request->post("page"), (int)$this->request->post("limit"));
         $get->setColumn('id', 'trade_no', 'sku', 'secret', 'user_id', 'password', 'amount', 'pay_id', 'commodity_id', 'create_time', 'pay_time', 'delivery_status', 'status', 'card_num', 'contact', "race");

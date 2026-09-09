@@ -1,5 +1,5 @@
 #{include file="../../Cartoon/Common/Header.html"}
-<link rel="stylesheet" href="/app/View/User/Theme/LiuNeng/assets/dashboard.css?build=20260909-dashboard-5">
+<link rel="stylesheet" href="/app/View/User/Theme/LiuNeng/assets/dashboard.css?build=20260909-dashboard-7">
 
 <main class="uc-main ln-dashboard">
     <section class="ln-dashboard-hero">
@@ -13,8 +13,9 @@
             </div>
             <p>#{t("在这里管理你的余额、订单与账户信息。")}</p>
             <div class="ln-dashboard-hero__actions">
-                <a class="ln-dashboard-button ln-dashboard-button--primary" href="/" target="_blank">
-                    <span>#{t("购买商品")}</span><span class="material-icons-outlined">arrow_forward</span>
+                <a class="ln-dashboard-button ln-dashboard-button--primary" href="/" target="_blank" aria-label="#{t('购买商品')}">
+                    #{t("购买商品")}
+                    <svg class="ln-dashboard-button__arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11M11 6l4 4-4 4"/></svg>
                 </a>
             </div>
         </div>
@@ -120,5 +121,5 @@
     </section>
 </main>
 
-#{ready("/assets/user/controller/user/purchase.record.js")}
+#{ready("/assets/user/controller/user/purchase.record.js?build=20260909-card-activate-1")}
 #{include file="../../Cartoon/Common/Footer.html"}

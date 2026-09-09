@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 return [
-    'version' => '1.1.0',
+    'version' => '1.2.0',
     'name' => '易支付聚合支付',
     'author' => 'Dreamer Labs',
     'website' => 'https://pay.yf2.cn/wd1.html',

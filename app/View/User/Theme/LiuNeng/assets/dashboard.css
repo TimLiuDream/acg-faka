@@ -151,7 +151,25 @@
 
 .ln-dashboard-button .material-icons-outlined { font-size: 18px; }
 .ln-dashboard-button:hover { transform: translateY(-2px); }
-.ln-dashboard-button--primary { border-color: var(--ln-blue); background: var(--ln-blue); color: #fff; }
+.ln-dashboard-button--primary {
+    border-color: var(--ln-blue);
+    background: var(--ln-blue);
+    color: #fff;
+    -webkit-text-fill-color: #fff;
+    font-size: 14px !important;
+    line-height: 1 !important;
+    text-indent: 0 !important;
+}
+.ln-dashboard-button__arrow {
+    display: block;
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
 .ln-dashboard-button--primary:hover { color: #fff; box-shadow: 0 10px 25px rgba(20, 108, 255, .28); }
 
 .ln-wallet {

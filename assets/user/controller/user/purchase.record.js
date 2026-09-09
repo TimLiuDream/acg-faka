@@ -89,6 +89,13 @@
                     title: "查看卡密",
                     show: _ => _.status == 1 && !!_.secret,
                     click: (event, value, map, index) => openSecret(map)
+                },
+                {
+                    icon: `fa-duotone fa-regular fa-bolt`,
+                    class: "text-success",
+                    title: "激活卡密",
+                    show: _ => _.status == 1 && _.delivery_status == 1 && !!_.secret,
+                    click: () => { window.location.href = '/user/index/activate'; }
                 }
             ]
         }

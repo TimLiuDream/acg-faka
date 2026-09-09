@@ -13,7 +13,9 @@
 
         data.forEach(item => {
             const isSoldOut = item.stock == 0;
-            $ItemList.append(`<a href="${!isSoldOut ? `/item/${item.id}` : `javascript:void(0);`}" class="col-12 col-md-6 col-lg-3 mb-3" data-id="${item.id}">
+            // 售罄只代表暂时不能下单，游客仍应能进入详情查看商品说明。
+            // 使用真实链接也可避免严格 CSP 拦截 javascript: URL。
+            $ItemList.append(`<a href="/item/${item.id}" class="col-12 col-md-6 col-lg-3 mb-3" data-id="${item.id}">
           <div class="acg-card ${isSoldOut ? `soldout` : ``} h-100">
             <div class="acg-thumb" style="background: url('${item.cover}') center/cover no-repeat;"></div>
             <div class="p-3">

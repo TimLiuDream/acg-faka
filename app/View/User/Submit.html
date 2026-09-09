@@ -1,20 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="#{lang_code()}">
 <head>
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
     <meta charset="UTF-8">
-    <title>请稍等,正在发起请求..</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+    <title>#{t("正在连接支付网关")} - #{$config.shop_name}</title>
+    <style>
+        * { box-sizing: border-box; }
+        html, body { min-height: 100%; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            color: #18332c;
+            background: radial-gradient(circle at 50% 25%, rgba(72, 158, 126, .10), transparent 34%), #f6f9f7;
+            font-family: "HarmonyOS Sans SC", "MiSans", "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+        .pay-bridge {
+            width: min(440px, 100%);
+            padding: 38px 34px 32px;
+            text-align: center;
+            border: 1px solid #dfe8e3;
+            border-radius: 24px 24px 8px 24px;
+            background: rgba(255, 255, 255, .96);
+            box-shadow: 0 24px 70px rgba(35, 79, 65, .10);
+        }
+        .pay-bridge__brand { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 30px; color: #18332c; font-size: 15px; font-weight: 760; }
+        .pay-bridge__brand img { width: 32px; height: 32px; border-radius: 9px; object-fit: cover; }
+        .pay-bridge__spinner {
+            position: relative;
+            width: 58px;
+            height: 58px;
+            margin: 0 auto 24px;
+            border: 5px solid #e4eee9;
+            border-top-color: #2f7662;
+            border-radius: 50%;
+            animation: pay-bridge-spin 1.15s linear infinite;
+        }
+        .pay-bridge__spinner::after { content: ""; position: absolute; inset: 11px; border-radius: 50%; background: #eaf3ee; }
+        .pay-bridge h1 { margin: 0; color: #12231e; font-size: 25px; line-height: 1.3; }
+        .pay-bridge p { margin: 12px 0 0; color: #71827b; font-size: 14px; line-height: 1.75; }
+        .pay-bridge__progress { height: 4px; margin-top: 28px; overflow: hidden; border-radius: 999px; background: #e8efeb; }
+        .pay-bridge__progress span {
+            display: block;
+            width: 40%;
+            height: 100%;
+            border-radius: inherit;
+            background: #2f7662;
+            animation: pay-bridge-progress 1.45s ease-in-out infinite;
+        }
+        .pay-bridge__fallback { display: none; margin-top: 22px; }
+        .pay-bridge.is-waiting .pay-bridge__fallback { display: block; }
+        .pay-bridge__fallback p { margin-bottom: 12px; font-size: 13px; }
+        .pay-bridge__fallback button { width: 100%; min-height: 46px; border: 0; border-radius: 12px; color: #fff; background: #2f7662; font: inherit; font-size: 14px; font-weight: 740; cursor: pointer; }
+        @keyframes pay-bridge-spin { to { transform: rotate(360deg); } }
+        @keyframes pay-bridge-progress {
+            0% { transform: translateX(-115%); }
+            50% { transform: translateX(75%); }
+            100% { transform: translateX(250%); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .pay-bridge__spinner, .pay-bridge__progress span { animation-duration: 2.5s; }
+        }
+    </style>
 </head>
 <body>
-请稍等,正在为您下单...
-<form action="#{$url}" method="post" id="request">
-    #{foreach $data as $key=>$val}
-    <input type="text" name="#{$key}" value="#{$val}" hidden>
-    #{/foreach}
-</form>
+<main class="pay-bridge" id="payBridge">
+    <div class="pay-bridge__brand"><img src="/favicon.ico" alt="">#{$config.shop_name}</div>
+    <div class="pay-bridge__spinner" aria-hidden="true"></div>
+    <h1>#{t("正在连接支付网关")}</h1>
+    <p>#{t("请稍候，正在安全跳转至支付页面。")}</p>
+    <div class="pay-bridge__progress" aria-hidden="true"><span></span></div>
+    <form action="#{$url}" method="post" id="request">
+        #{foreach $data as $key=>$val}
+        <input type="hidden" name="#{$key}" value="#{$val}">
+        #{/foreach}
+        <div class="pay-bridge__fallback">
+            <p>#{t("如果页面长时间没有跳转，请点击继续支付。")}</p>
+            <button type="submit">#{t("继续支付")}</button>
+        </div>
+    </form>
+</main>
 <script>
-    document.getElementById("request").submit();
+    (function () {
+        var form = document.getElementById("request");
+        var bridge = document.getElementById("payBridge");
+        window.setTimeout(function () { bridge.classList.add("is-waiting"); }, 6000);
+        form.submit();
+    })();
 </script>
 </body>
 </html>

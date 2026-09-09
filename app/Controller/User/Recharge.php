@@ -14,6 +14,7 @@ use Kernel\Annotation\Interceptor;
 use Kernel\Exception\JSONException;
 use Kernel\Exception\ViewException;
 use Kernel\Util\View;
+use App\Util\Csp;
 use App\Util\PayConfig;
 
 #[Interceptor(Waf::class, Interceptor::TYPE_VIEW)]
@@ -107,6 +108,7 @@ class Recharge extends User
             if (!$data) {
                 throw new JSONException("参数错误");
             }
+            Csp::allowFormAction((string)$order->pay_url);
             return $this->render("正在下单，请稍后..", "Submit.html", [
                 "url" => $order->pay_url,
                 "data" => $data

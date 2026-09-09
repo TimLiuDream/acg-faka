@@ -18,6 +18,7 @@ use App\Model\Pay;
 use App\Model\User;
 use App\Model\UserCommodity;
 use App\Model\UserGroup;
+use App\Service\PaymentStatusQuery;
 use App\Service\Email;
 use App\Service\Shared;
 use App\Util\Client;
@@ -824,11 +825,9 @@ class Order implements \App\Service\Order
                     $order->pay_cost = $pay->cost_type == 0 ? $pay->cost : (new Decimal($order->amount, 2))->mul($pay->cost)->getAmount();
                     $order->amount = (new Decimal($order->amount, 2))->add($order->pay_cost)->getAmount();
 
-                    if ($owner == 0) {
-                        $returnUrl = $clientDomain . '/user/index/query?tradeNo=' . $order->trade_no;
-                    } else {
-                        $returnUrl = $clientDomain . '/user/personal/purchaseRecord?tradeNo=' . $order->trade_no;
-                    }
+                    // 支付平台的同步回跳也携带签名结果。先进入本站验签并完成订单，再跳到查询页；
+                    // 本地开发地址收不到公网异步通知时，这条链路尤其重要。
+                    $returnUrl = $clientDomain . '/user/pay/result.' . $order->trade_no;
 
                     $order->gateway_amount = Currency::toCny($order->amount);
 
@@ -1102,7 +1101,7 @@ class Order implements \App\Service\Order
         $tradeNo = (string)$order->trade_no;
         DB::connection()->getPdo()->exec("set session transaction isolation level serializable");
         DB::transaction(function () use ($handle, $map, $callback, $tradeNo) {
-            $order = \App\Model\Order::query()->where("trade_no", $tradeNo)->first();
+            $order = \App\Model\Order::query()->where("trade_no", $tradeNo)->lockForUpdate()->first();
             if (!$order) {
                 self::callbackFail($handle, "not_found", self::CALLBACK_REJECT, $tradeNo, $map, "订单不存在");
             }
@@ -1130,6 +1129,64 @@ class Order implements \App\Service\Order
             $this->orderSuccess($order);
         });
         return $callback['success'];
+    }
+
+    public function syncPaymentStatus(\App\Model\Order $order): bool
+    {
+        if ((int)$order->status !== 0) {
+            return true;
+        }
+
+        $pay = $order->pay;
+        if (!$pay || (string)$pay->handle === '#system') {
+            return false;
+        }
+
+        try {
+            $amount = (float)($order->gateway_amount ?? $order->amount);
+            $payObject = PayFactory::make($pay, (string)$order->trade_no, $amount, '', '', Client::getAddress());
+            if (!$payObject instanceof PaymentStatusQuery) {
+                return false;
+            }
+
+            $remote = $payObject->queryPayment();
+            if (($remote['paid'] ?? false) !== true) {
+                return false;
+            }
+            if (!hash_equals((string)$order->trade_no, (string)($remote['trade_no'] ?? ''))) {
+                return false;
+            }
+
+            $paidAmount = $remote['amount'] ?? null;
+            if (!is_scalar($paidAmount) || !is_numeric((string)$paidAmount)) {
+                return false;
+            }
+            $expected = (new Decimal((string)($order->gateway_amount ?? $order->amount), 2))->getAmount();
+            $actual = (new Decimal((string)$paidAmount, 2))->getAmount();
+            if (!hash_equals($expected, $actual)) {
+                PayConfig::log((string)$pay->handle, 'QUERY', '主动查单金额不匹配，订单号：' . $order->trade_no);
+                return false;
+            }
+
+            DB::connection()->getPdo()->exec("set session transaction isolation level serializable");
+            DB::transaction(function () use ($order): void {
+                $locked = \App\Model\Order::query()->whereKey($order->id)->lockForUpdate()->first();
+                if (!$locked || (int)$locked->status !== 0) {
+                    return;
+                }
+                if ($locked->owner != 0 && $owner = User::query()->whereKey($locked->owner)->lockForUpdate()->first()) {
+                    $owner->recharge = $owner->recharge + $locked->amount;
+                    $owner->save();
+                }
+                $this->orderSuccess($locked);
+            });
+
+            return (int)\App\Model\Order::query()->whereKey($order->id)->value('status') === 1;
+        } catch (\Throwable $e) {
+            $reason = $e instanceof JSONException ? $e->getMessage() : '支付平台查单请求失败';
+            PayConfig::log((string)$pay->handle, 'QUERY', '主动查单失败，订单号：' . $order->trade_no . '；原因：' . $reason);
+            return false;
+        }
     }
 
     public function getTradeAmount(

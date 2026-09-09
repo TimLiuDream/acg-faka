@@ -100,6 +100,11 @@ interface Order
     public function callback(string $tradeNo, array $map): string;
 
     /**
+     * 主动向支付平台核对待付款订单；确认支付且金额一致后完成订单。
+     */
+    public function syncPaymentStatus(\App\Model\Order $order): bool;
+
+    /**
      * @param \App\Model\Order $order
      * @return string
      */
