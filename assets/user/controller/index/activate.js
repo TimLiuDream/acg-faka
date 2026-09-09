@@ -9,15 +9,6 @@
     const $accountBox = $('.ln-activate-account-box');
     const $progress = $('.ln-activate-progress');
 
-    let verifiedSecret = null;   // 已通过验证的卡密，提交前比对防止改了输入绕过验证
-
-    const redeemStatusMap = () => ({
-        0: {cls: 'is-queue', text: i18n('排队中')},
-        1: {cls: 'is-running', text: i18n('处理中')},
-        2: {cls: 'is-done', text: i18n('已完成')},
-        3: {cls: 'is-failed', text: i18n('失败')}
-    });
-
     const progressStatusMap = () => ({
         unused: {cls: 'is-queue', text: i18n('未使用')},
         redeeming: {cls: 'is-running', text: i18n('提交中')},
@@ -28,7 +19,7 @@
         revoked: {cls: 'is-failed', text: i18n('已作废')}
     });
 
-    // ===== 第 1 步：查询上游兑换进度，同时确认卡密 =====
+    // ===== 第 1 步：查询上游兑换进度 =====
     $('.ln-activate-verify').on('click', function () {
         const secret = String($secret.val() || '').trim();
         if (secret.length < 4) {
@@ -47,12 +38,10 @@
                 $btn.attr('disabled', false);
                 const card = res?.data?.card ?? null;
                 if (!card || !card.status) {
-                    verifiedSecret = null;
                     $verifyState.html(`<span class="is-bad">${i18n('进度查询服务返回异常，请稍后再试')}</span>`);
                     $progress.hide().empty();
                     return;
                 }
-                verifiedSecret = secret;
                 const meta = progressStatusMap()[card.status] || progressStatusMap().processing;
                 $verifyState.html(
                     `<span class="is-ok"><i class="fa-duotone fa-regular fa-circle-check"></i> ${i18n('进度查询成功')}</span> `
@@ -62,13 +51,11 @@
             },
             error: res => {
                 $btn.attr('disabled', false);
-                verifiedSecret = null;
                 $verifyState.html(`<span class="is-bad"><i class="fa-duotone fa-regular fa-circle-xmark"></i> ${esc(res?.msg || i18n('未查询到兑换进度'))}</span>`);
                 $progress.hide().empty();
             },
             fail: () => {
                 $btn.attr('disabled', false);
-                verifiedSecret = null;
                 $verifyState.html(`<span class="is-bad">${i18n('网络异常，请稍后再试')}</span>`);
             }
         });
@@ -114,41 +101,6 @@
         `).show();
     }
 
-    // ===== 进度渲染（提交成功或恢复进度共用） =====
-    function _RenderProgress(redeem) {
-        if (!redeem) {
-            $progress.hide().empty();
-            return;
-        }
-
-        const map = redeemStatusMap();
-        const meta = map[redeem.status] || map[0];
-        const rows = [];
-        if (redeem.account_email) {
-            rows.push(`<p>${i18n('充值账号')}：${esc(redeem.account_email)}</p>`);
-        }
-        if (redeem.account_plan) {
-            rows.push(`<p>${i18n('当前套餐')}：${esc(redeem.account_plan)}</p>`);
-        }
-        if (redeem.create_time) {
-            rows.push(`<p>${i18n('提交时间')}：${esc(redeem.create_time)}</p>`);
-        }
-        if (redeem.message) {
-            rows.push(`<p>${i18n('备注')}：${esc(redeem.message)}</p>`);
-        }
-
-        $progress.html(`
-            <div class="ln-activate-progress__box">
-                <strong>
-                    <i class="fa-duotone fa-regular fa-clock-rotate-left"></i>${i18n('兑换进度')}
-                    <span class="ln-activate-chip ${meta.cls}">${esc(meta.text)}</span>
-                </strong>
-                ${rows.join('')}
-                <p>${i18n('刷新页面后输入原卡密，点击「进度查询」可随时查看。')}</p>
-            </div>
-        `).show();
-    }
-
     // ===== 第 2 步：本地解析 Session JSON =====
     $session.on('input', function () {
         const raw = String($(this).val() || '').trim();
@@ -173,14 +125,20 @@
         const plan = json?.planName || json?.plan || json?.user?.planName || '';
         const expire = json?.expires || json?.expire || '';
 
-        if (typeof json.accessToken !== 'string' || json.accessToken.length < 80) {
+        if (!json || Array.isArray(json) || typeof json !== 'object') {
             $accountBox.removeClass('is-ready').addClass('is-bad').html(
-                `<strong>${i18n('缺少有效的 accessToken')}</strong><p>${i18n('请确认复制的是 Session 页面的完整 JSON。')}</p>`
+                `<strong>${i18n('Session JSON 格式不正确')}</strong><p>${i18n('请确认复制的是 Session 页面的完整 JSON。')}</p>`
             );
             return;
         }
 
         const rows = [];
+        if (!email && !plan && !expire) {
+            $accountBox.removeClass('is-bad').addClass('is-ready').html(
+                `<strong>${i18n('Session JSON 格式有效')}</strong><p>${i18n('提交后将由兑换服务继续验证账号信息。')}</p>`
+            );
+            return;
+        }
         rows.push(`<li><span>${i18n('邮箱')}</span><strong>${esc(email || i18n('未检测到'))}</strong></li>`);
         rows.push(`<li><span>${i18n('当前套餐')}</span><strong>${esc(plan || i18n('未检测到'))}</strong></li>`);
         rows.push(`<li><span>${i18n('有效期')}</span><strong>${esc(expire || i18n('未检测到'))}</strong></li>`);
@@ -195,8 +153,8 @@
         const secret = String($secret.val() || '').trim();
         const raw = String($session.val() || '').trim();
 
-        if (!secret || secret !== verifiedSecret) {
-            message.error(i18n('请先点击「进度查询」确认卡密'));
+        if (secret.length < 4) {
+            message.error(i18n('请输入正确的卡密'));
             return;
         }
 
@@ -213,8 +171,8 @@
             return;
         }
 
-        if (typeof json.accessToken !== 'string' || json.accessToken.length < 80) {
-            message.error(i18n('Session JSON 缺少有效的 accessToken'));
+        if (!json || Array.isArray(json) || typeof json !== 'object') {
+            message.error(i18n('Session JSON 格式不正确'));
             return;
         }
 
@@ -227,20 +185,29 @@
             loader: false,
             done: res => {
                 $btn.attr('disabled', false);
-                message.success(i18n('提交成功，卡密已进入处理队列'));
-                _RenderProgress({
-                    status: res?.data?.status ?? 0,
-                    account_email: res?.data?.account_email,
-                    create_time: res?.data?.create_time
-                });
+                $session.val('');
+                const data = res?.data ?? {};
+                if (data.alreadyUsed) {
+                    message.success(i18n('该卡密已使用过，已显示最新进度'));
+                } else if (data.resume) {
+                    message.success(i18n('该卡密正在处理中，已显示最新进度'));
+                } else {
+                    message.success(i18n('提交成功，卡密已进入处理队列'));
+                }
+                if (data.card) {
+                    _RenderRemoteProgress(data.card);
+                    const meta = progressStatusMap()[data.card.status] || progressStatusMap().processing;
+                    $verifyState.html(
+                        `<span class="is-ok"><i class="fa-duotone fa-regular fa-circle-check"></i> ${i18n('提交成功')}</span> `
+                        + `<span class="is-dim">${i18n('当前状态')}：${esc(meta.text)}</span>`
+                    );
+                } else {
+                    $('.ln-activate-verify').trigger('click');
+                }
             },
             error: res => {
                 $btn.attr('disabled', false);
                 message.error(res?.msg || i18n('提交失败，请稍后再试'));
-                //重复提交等场景同步一次服务端进度
-                if (verifiedSecret) {
-                    $('.ln-activate-verify').trigger('click');
-                }
             },
             fail: () => {
                 $btn.attr('disabled', false);

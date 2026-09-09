@@ -45,9 +45,9 @@
                         <p>#{t("先确认 ChatGPT 已经登录：打开官网必须能直接进入聊天页。如果看到登录或注册页面，请先登录，否则获取的 Session 无效或已过期。")}</p>
                         <p>#{t("登录成功后重新打开 Session 页面。页面应显示一整段以 { 开头、以 } 结尾的 JSON，而不是登录页面。")}</p>
                         <p>#{t("全选并复制整段内容：电脑使用 Ctrl/Cmd + A，手机长按全选。不要只复制一部分，也不要通过聊天软件转发后再复制。")}</p>
-                        <p>#{t("完整内容需要包含")} <code>accessToken</code>，#{t("以及")} <code>user_email</code>#{t("。")}</p>
+                        <p>#{t("完整内容需要包含 accessToken 或 sessionToken，以及 user.email。")}</p>
                         <div class="ln-activate-warn">
-                            #{t("Session 会加密存储于服务端队列，完成或失败后立即删除，最长保留 24 小时。")}
+                            #{t("Session 将通过 HTTPS 提交至兑换服务，本站不会将其写入数据库。")}
                         </div>
                     </div>
                 </details>
@@ -55,7 +55,7 @@
                 <div class="ln-activate-progress" style="display:none" aria-live="polite"></div>
             </div>
 
-            <p class="ln-activate-foot">#{t("Session 属于敏感凭证，提交后会加密保存并在处理结束后删除。请勿分享给他人。")}</p>
+            <p class="ln-activate-foot">#{t("Session 属于敏感凭证，仅会转发至兑换服务用于本次处理。请勿分享给他人。")}</p>
             <button type="button" class="ln-activate-submit">
                 <i class="fa-duotone fa-regular fa-paper-plane"></i>#{t("确认账号并提交兑换")}
             </button>
@@ -77,5 +77,5 @@
     </div>
 </main>
 
-#{ready("/assets/user/controller/index/activate.js?build=20260909-progress-1")}
+#{ready("/assets/user/controller/index/activate.js?build=20260909-redeem-1")}
 #{include file="./Footer.html"}
