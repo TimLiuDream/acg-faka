@@ -9,6 +9,6 @@ return array (
   'support_url' => '',
   'support_twitter' => '@timliu92',
   'support_wechat' => 'liufotian1992',
-  'support_wechat_qr' => '',
+  'support_wechat_qr' => '/app/View/User/Theme/LiuNeng/assets/images/wechat-qr.png',
   'support_telegram' => '@dreamtimliu',
 );
