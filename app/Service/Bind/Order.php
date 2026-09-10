@@ -13,6 +13,7 @@ use App\Model\Commodity;
 use App\Model\CommodityGroup;
 use App\Model\Config;
 use App\Model\Coupon;
+use App\Model\Manage;
 use App\Model\OrderOption;
 use App\Model\Pay;
 use App\Model\User;
@@ -1005,8 +1006,61 @@ class Order implements \App\Service\Order
         }
 
         hook(Hook::USER_API_ORDER_PAY_AFTER, $commodity, $order, $order->pay);
+        $this->notifyManagersOfSale($order, $commodity);
 
         return (string)$order->secret;
+    }
+
+    private function notifyManagersOfSale(\App\Model\Order $order, Commodity $commodity): void
+    {
+        if ((float)$order->amount <= 0) {
+            return;
+        }
+
+        $recipients = Manage::query()
+            ->where('status', 1)
+            ->whereNotNull('email')
+            ->where('email', '<>', '')
+            ->pluck('email')
+            ->unique()
+            ->values();
+
+        if ($recipients->isEmpty()) {
+            return;
+        }
+
+        $escape = static fn(mixed $value): string => htmlspecialchars(
+            is_scalar($value) ? (string)$value : '',
+            ENT_QUOTES | ENT_SUBSTITUTE,
+            'UTF-8'
+        );
+        $amount = number_format((float)$order->amount, 2, '.', '');
+        $payName = $order->pay?->name ?: '未知';
+        $deliveryStatus = (int)$order->delivery_status === 1 ? '已发货' : '待发货';
+        $contact = trim((string)$order->contact);
+        $shopName = trim((string)Config::get('shop_name')) ?: 'Dreamer Labs';
+        $title = "【{$shopName}】新订单已支付 ¥{$amount}";
+        $content = '<h2 style="margin:0 0 16px">新订单已支付</h2>'
+            . '<table style="border-collapse:collapse;line-height:1.7">'
+            . '<tr><td style="padding:4px 18px 4px 0;color:#667085">订单号</td><td>' . $escape($order->trade_no) . '</td></tr>'
+            . '<tr><td style="padding:4px 18px 4px 0;color:#667085">商品</td><td>' . $escape($commodity->name) . '</td></tr>'
+            . '<tr><td style="padding:4px 18px 4px 0;color:#667085">数量</td><td>' . $escape($order->card_num) . '</td></tr>'
+            . '<tr><td style="padding:4px 18px 4px 0;color:#667085">实付</td><td>¥' . $amount . '</td></tr>'
+            . '<tr><td style="padding:4px 18px 4px 0;color:#667085">支付方式</td><td>' . $escape($payName) . '</td></tr>'
+            . '<tr><td style="padding:4px 18px 4px 0;color:#667085">发货状态</td><td>' . $deliveryStatus . '</td></tr>'
+            . '<tr><td style="padding:4px 18px 4px 0;color:#667085">联系方式</td><td>' . $escape($contact !== '' ? $contact : '未填写') . '</td></tr>'
+            . '<tr><td style="padding:4px 18px 4px 0;color:#667085">支付时间</td><td>' . $escape($order->pay_time) . '</td></tr>'
+            . '</table>';
+
+        foreach ($recipients as $recipient) {
+            try {
+                if (!$this->email->send((string)$recipient, $title, $content)) {
+                    error_log('Sale notification email failed for order ' . (string)$order->trade_no);
+                }
+            } catch (\Throwable) {
+                error_log('Sale notification email failed for order ' . (string)$order->trade_no);
+            }
+        }
     }
 
     private function pullCardForLocal(\App\Model\Order $order, Commodity $commodity): string
