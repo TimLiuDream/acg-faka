@@ -18,6 +18,7 @@ use App\Util\CallbackIpWhitelist;
 use App\Util\Client;
 use App\Util\LinkDomainGuard;
 use App\Util\Date;
+use App\Util\FeishuNotifier;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Kernel\Annotation\Inject;
@@ -104,6 +105,12 @@ class Config extends Manage
         'username',
         'from',
         'password',
+    ];
+
+    private const NOTIFICATION_REQUEST_FIELDS = [
+        'feishu_enabled',
+        'feishu_webhook',
+        'feishu_secret',
     ];
 
     private const OTHER_REQUEST_FIELDS = [
@@ -589,6 +596,7 @@ class Config extends Manage
     private const TEST_SEND_LIMITS = [
         'email' => ['max' => 20, 'window' => 300, 'interval' => 3],
         'sms' => ['max' => 3, 'window' => 300, 'interval' => 30],
+        'feishu' => ['max' => 10, 'window' => 300, 'interval' => 3],
     ];
 
     private function consumeTestSendQuota(string $channel): void
@@ -1105,6 +1113,59 @@ class Config extends Manage
         }
         ManageLog::log($this->getManage(), "测试了邮件发送");
         return $this->json(200, "成功!");
+    }
+
+    public function notification(): array
+    {
+        $map = $this->configPost(self::NOTIFICATION_REQUEST_FIELDS, '通知设置');
+        $stored = $this->storedJsonConfig(FeishuNotifier::CONFIG_KEY);
+        $enabled = $this->configBoolean($map, 'feishu_enabled', '飞书通知开关');
+        $webhook = $this->preserveSecret(
+            $stored,
+            'feishu_webhook',
+            $this->configSecret($map, 'feishu_webhook', 2048, '飞书机器人 Webhook')
+        );
+        $secret = $this->preserveSecret(
+            $stored,
+            'feishu_secret',
+            $this->configSecret($map, 'feishu_secret', 512, '飞书机器人签名密钥')
+        );
+
+        if ($webhook !== '' && !FeishuNotifier::isValidWebhook($webhook)) {
+            throw new JSONException('飞书机器人 Webhook 格式不正确');
+        }
+        if ($enabled === 1 && $webhook === '') {
+            throw new JSONException('开启飞书通知前，请先填写机器人 Webhook');
+        }
+
+        try {
+            CFG::put(FeishuNotifier::CONFIG_KEY, $this->encodeJsonConfig([
+                'feishu_enabled' => $enabled,
+                'feishu_webhook' => $webhook,
+                'feishu_secret' => $secret,
+            ], '通知设置'));
+        } catch (JSONException $e) {
+            throw $e;
+        } catch (\Throwable) {
+            throw new JSONException('通知设置保存失败，请稍后重试');
+        }
+
+        ManageLog::log($this->getManage(), '修改了订单通知设置');
+        return $this->json(200, '通知设置已保存');
+    }
+
+    public function notificationTest(): array
+    {
+        $this->configPost([], '飞书通知测试');
+        $this->consumeTestSendQuota('feishu');
+        try {
+            FeishuNotifier::sendTest();
+        } catch (\Throwable $e) {
+            throw new JSONException(mb_substr($e->getMessage(), 0, 200));
+        }
+
+        ManageLog::log($this->getManage(), '测试了飞书订单通知');
+        return $this->json(200, '飞书测试通知已发送');
     }
 
     private function emailFailureMessage(string $error): string

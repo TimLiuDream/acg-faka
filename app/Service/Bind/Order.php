@@ -25,6 +25,7 @@ use App\Service\Shared;
 use App\Util\Client;
 use App\Util\Currency;
 use App\Util\Date;
+use App\Util\FeishuNotifier;
 use App\Util\Ini;
 use App\Util\PayConfig;
 use App\Util\PayFactory;
@@ -1025,10 +1026,6 @@ class Order implements \App\Service\Order
             ->unique()
             ->values();
 
-        if ($recipients->isEmpty()) {
-            return;
-        }
-
         $escape = static fn(mixed $value): string => htmlspecialchars(
             is_scalar($value) ? (string)$value : '',
             ENT_QUOTES | ENT_SUBSTITUTE,
@@ -1060,6 +1057,12 @@ class Order implements \App\Service\Order
             } catch (\Throwable) {
                 error_log('Sale notification email failed for order ' . (string)$order->trade_no);
             }
+        }
+
+        try {
+            FeishuNotifier::sendSale($order, $commodity);
+        } catch (\Throwable) {
+            error_log('Feishu sale notification failed for order ' . (string)$order->trade_no);
         }
     }
 

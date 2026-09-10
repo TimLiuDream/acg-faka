@@ -20,6 +20,7 @@ class Config extends Manage
         ["name" => '基本设置', "url" => "/admin/config/index"],
         ["name" => "短信设置", "url" => "/admin/config/sms"],
         ["name" => "邮箱设置", "url" => "/admin/config/email"],
+        ["name" => "通知设置", "url" => "/admin/config/notification"],
         ["name" => "其他设置", "url" => "/admin/config/other"],
         ["name" => "安全设置", "url" => "/admin/config/security"],
     ];
@@ -103,6 +104,23 @@ class Config extends Manage
         $emailConfig = is_array($emailConfig) ? $emailConfig : [];
         unset($emailConfig['password']);
         return $this->render("邮箱设置", "Config/Email.html", ["toolbar" => $this->TOOLBAR, "email" => $emailConfig]);
+    }
+
+    public function notification(): string
+    {
+        $notification = json_decode(
+            (string)\App\Model\Config::get(\App\Util\FeishuNotifier::CONFIG_KEY),
+            true
+        );
+        $notification = is_array($notification) ? $notification : [];
+        return $this->render("通知设置", "Config/Notification.html", [
+            "toolbar" => $this->TOOLBAR,
+            "notification" => [
+                'feishu_enabled' => (int)($notification['feishu_enabled'] ?? 0),
+                'feishu_configured' => trim((string)($notification['feishu_webhook'] ?? '')) !== '',
+                'feishu_secret_configured' => trim((string)($notification['feishu_secret'] ?? '')) !== '',
+            ],
+        ]);
     }
 
     public function security(): string
