@@ -93,11 +93,11 @@
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                         <h2 class="md-section-title">#{t("数据概览")}</h2>
                         <select name="status" class="form-select form-select-sm dashboard-data-type" style="width: auto;">
-                            <option value="0" selected="selected">#{t("今日数据")}</option>
+                            <option value="0">#{t("今日数据")}</option>
                             <option value="1">#{t("昨日数据")}</option>
                             <option value="2">#{t("本周数据")}</option>
                             <option value="3">#{t("本月数据")}</option>
-                            <option value="4">#{t("所有数据")}</option>
+                            <option value="4" selected="selected">#{t("所有数据")}</option>
                         </select>
                     </div>
                     <!--end::Section header-->
@@ -146,5 +146,5 @@
 </div>
 <!--end::Content-->
 
-#{ready("/assets/admin/controller/dashboard/index.js")}
+#{ready("/assets/admin/controller/dashboard/index.js?build=20260911-all-data-1")}
 #{include file="../Footer.html"}

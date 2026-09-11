@@ -322,7 +322,7 @@
 
     initAnnouncementDisclosure();
     loadAd();
-    loadDashboardData(0);
+    loadDashboardData($('.dashboard-data-type').val() || 4);
     loadWeekStatistics();
 
     $('.dashboard-data-type').off('.mdDashboard').on('change.mdDashboard', function () {
