@@ -39,6 +39,9 @@
                     </div>
 
                     <div class="ln-item-badges">
+                        #{foreach $item.tags as $tag}
+                        <span class="ln-item-badge acg-tag acg-tag--#{$tag.color}">#{lang($tag.text)}</span>
+                        #{/foreach}
                         #{if $item.seckill_status == 1}<span class="ln-item-badge snap-up" style="display:none"></span>#{/if}
                         <span class="ln-item-badge ln-item-badge--delivery">
                             <i class="fa-duotone fa-regular fa-bolt"></i>
@@ -197,5 +200,5 @@
     </section>
 </main>
 
-#{ready("/assets/user/controller/index/item.js?build=20260908-lookup-2")}
+#{ready("/assets/user/controller/index/item.js?build=20260911-period-1")}
 #{include file="./Footer.html"}
