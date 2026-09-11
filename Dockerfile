@@ -61,9 +61,11 @@ RUN mkdir -p \
         cp /var/www/html/favicon.ico /var/www/html/assets/cache/favicon.ico; \
         ln -sf assets/cache/favicon.ico /var/www/html/favicon.ico; \
     fi \
-    && if [ -d /var/www/html/app/Pay/Epay ]; then \
-        cp -R /var/www/html/app/Pay/Epay /usr/local/share/acg-faka/pay/Epay; \
-    fi \
+    && for payment in Epay GmPay; do \
+        if [ -d "/var/www/html/app/Pay/$payment" ]; then \
+            cp -R "/var/www/html/app/Pay/$payment" "/usr/local/share/acg-faka/pay/$payment"; \
+        fi; \
+    done \
     && if [ ! -d /var/www/html/vendor ] || [ ! -f /var/www/html/vendor/autoload.php ]; then \
         composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction; \
     else \

@@ -22,15 +22,21 @@ mkdir -p \
     runtime/waf
 
 # app/Pay 使用持久化卷。代码随镜像更新，管理员维护的插件排序配置单独保留。
-if [ -d /usr/local/share/acg-faka/pay/Epay ]; then
-    mkdir -p app/Pay/Epay/Config app/Pay/Epay/Impl
-    if [ ! -f app/Pay/Epay/Config/Config.php ]; then
-        cp /usr/local/share/acg-faka/pay/Epay/Config/Config.php app/Pay/Epay/Config/Config.php
+for payment in Epay GmPay; do
+    if [ -d "/usr/local/share/acg-faka/pay/$payment" ]; then
+        mkdir -p "app/Pay/$payment/Config" "app/Pay/$payment/Impl"
+        if [ ! -f "app/Pay/$payment/Config/Config.php" ]; then
+            cp "/usr/local/share/acg-faka/pay/$payment/Config/Config.php" "app/Pay/$payment/Config/Config.php"
+        fi
+        cp "/usr/local/share/acg-faka/pay/$payment/Config/Info.php" "app/Pay/$payment/Config/Info.php"
+        cp "/usr/local/share/acg-faka/pay/$payment/Config/Submit.php" "app/Pay/$payment/Config/Submit.php"
+        cp -R "/usr/local/share/acg-faka/pay/$payment/Impl/." "app/Pay/$payment/Impl/"
+        if [ -d "/usr/local/share/acg-faka/pay/$payment/View" ]; then
+            mkdir -p "app/Pay/$payment/View"
+            cp -R "/usr/local/share/acg-faka/pay/$payment/View/." "app/Pay/$payment/View/"
+        fi
     fi
-    cp /usr/local/share/acg-faka/pay/Epay/Config/Info.php app/Pay/Epay/Config/Info.php
-    cp /usr/local/share/acg-faka/pay/Epay/Config/Submit.php app/Pay/Epay/Config/Submit.php
-    cp -R /usr/local/share/acg-faka/pay/Epay/Impl/. app/Pay/Epay/Impl/
-fi
+done
 
 # 后台“基础设置”会把上传的 Logo 写到 /favicon.ico。
 # 将它落到 assets/cache 这个持久化卷中，避免容器重建后丢失。

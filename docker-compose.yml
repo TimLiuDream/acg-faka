@@ -24,6 +24,18 @@ services:
       - ./app/View/Admin:/var/www/html/app/View/Admin
       - ./assets/admin:/var/www/html/assets/admin
 
+  gmpay:
+    # 固定已验证的 GM Pay v2.0.0，避免 latest 静默升级后破坏签名协议。
+    image: gmwallet/epusdt@sha256:9d2fef82fb875e83f968870bee010ce593ef7bcb5362d09ef1c7f871fa27c55e
+    container_name: acg-faka-gmpay
+    restart: unless-stopped
+    environment:
+      EPUSDT_CONFIG: /data/.env
+    ports:
+      - "127.0.0.1:${GMPAY_HTTP_PORT:-8090}:8000"
+    volumes:
+      - gmpay_data:/data
+
   mysql:
     image: mysql:8.0
     container_name: acg-faka-mysql
@@ -67,3 +79,4 @@ volumes:
   acg_pay:
   acg_mysql:
   acg_redis:
+  gmpay_data:
