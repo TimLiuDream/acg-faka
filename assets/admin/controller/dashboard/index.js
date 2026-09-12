@@ -4,6 +4,7 @@
     const pendingLoaders = new Set();
     let dashboardDataGeneration = 0;
     let weekStatisticsGeneration = 0;
+    let viewStatisticsGeneration = 0;
     const escapeHtml = value => String(value ?? '')
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
@@ -214,10 +215,14 @@
         }));
     }
 
-    let _chart = null, _chartData = null, _chartObserver = null, _chartResizeObserver = null;
-    const _resizeChart = () => {
+    let _chart = null, _chartData = null, _viewChart = null, _viewChartData = null;
+    let _chartObserver = null, _chartResizeObserver = null, _viewChartResizeObserver = null;
+    const _resizeCharts = () => {
         if (_chart && ! _chart.isDisposed()) {
             _chart.resize();
+        }
+        if (_viewChart && !_viewChart.isDisposed()) {
+            _viewChart.resize();
         }
     };
 
@@ -226,6 +231,7 @@
         controllerActive = false;
         dashboardDataGeneration++;
         weekStatisticsGeneration++;
+        viewStatisticsGeneration++;
         pendingRequests.forEach(request => {
             try { request.abort(); } catch (error) {}
         });
@@ -233,16 +239,23 @@
         pendingLoaders.forEach(index => layer.close(index));
         pendingLoaders.clear();
         $('.dashboard-data-type').off('.mdDashboard');
-        window.removeEventListener('resize', _resizeChart);
+        window.removeEventListener('resize', _resizeCharts);
         _chartObserver?.disconnect();
         _chartObserver = null;
         _chartResizeObserver?.disconnect();
         _chartResizeObserver = null;
+        _viewChartResizeObserver?.disconnect();
+        _viewChartResizeObserver = null;
         if (_chart && !_chart.isDisposed()) {
             _chart.dispose();
         }
+        if (_viewChart && !_viewChart.isDisposed()) {
+            _viewChart.dispose();
+        }
         _chart = null;
         _chartData = null;
+        _viewChart = null;
+        _viewChartData = null;
     }
 
     function _chartTheme() {
@@ -260,7 +273,7 @@
         if (!el || !_chartData) return;
         if (!_chart) _chart = echarts.init(el);
         if (!_chartResizeObserver && typeof ResizeObserver === 'function') {
-            _chartResizeObserver = new ResizeObserver(_resizeChart);
+            _chartResizeObserver = new ResizeObserver(_resizeCharts);
             _chartResizeObserver.observe(el);
         }
         const c = _chartTheme();
@@ -293,6 +306,55 @@
         }, true);
     }
 
+    function _renderViewChart() {
+        const el = document.getElementById('view-statistics');
+        if (!el || !_viewChartData) return;
+        if (!_viewChart) _viewChart = echarts.init(el);
+        if (!_viewChartResizeObserver && typeof ResizeObserver === 'function') {
+            _viewChartResizeObserver = new ResizeObserver(_resizeCharts);
+            _viewChartResizeObserver.observe(el);
+        }
+        const c = _chartTheme();
+        const S = (name, data) => ({
+            name, type: 'line', smooth: true,
+            symbol: 'circle', symbolSize: 6, showSymbol: false,
+            lineStyle: {width: 2.5}, areaStyle: {opacity: 0.08},
+            emphasis: {focus: 'series'}, data
+        });
+        _viewChart.setOption({
+            color: [c.trade, c.profit],
+            tooltip: {trigger: 'axis', axisPointer: {type: 'line'}},
+            legend: {data: [i18n('首页浏览'), i18n('商品浏览')], icon: 'roundRect', textStyle: {color: c.text, fontSize: 12}},
+            grid: {left: '2%', right: '3%', bottom: '2%', top: 48, containLabel: true},
+            xAxis: [{
+                type: 'category', boundaryGap: false, data: _viewChartData.days,
+                axisLabel: {color: c.text, fontSize: 10, interval: 'auto'},
+                axisLine: {lineStyle: {color: c.line}}, axisTick: {show: false}
+            }],
+            yAxis: [{
+                type: 'value', minInterval: 1,
+                axisLabel: {color: c.text, fontSize: 10},
+                splitLine: {lineStyle: {color: c.line}}, axisLine: {show: false}
+            }],
+            series: [
+                S(i18n('首页浏览'), _viewChartData.home),
+                S(i18n('商品浏览'), _viewChartData.commodity)
+            ]
+        }, true);
+    }
+
+    function bindChartObservers() {
+        if (!_chartObserver) {
+            _chartObserver = new MutationObserver(() => {
+                _renderChart();
+                _renderViewChart();
+            });
+            _chartObserver.observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
+        }
+        window.removeEventListener('resize', _resizeCharts);
+        window.addEventListener('resize', _resizeCharts, {passive: true});
+    }
+
     function loadWeekStatistics() {
         const generation = ++weekStatisticsGeneration;
         const chartElement = document.getElementById('statistics');
@@ -308,13 +370,7 @@
             if (chartElement) chartElement.hidden = false;
             _chartData = res.data;
             _renderChart();
-            // 主题切换时重新着色
-            if (!_chartObserver) {
-                _chartObserver = new MutationObserver(() => _renderChart());
-                _chartObserver.observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
-            }
-            window.removeEventListener('resize', _resizeChart);
-            window.addEventListener('resize', _resizeChart, {passive: true});
+            bindChartObservers();
         }).fail((xhr, status) => {
             if (!controllerActive || status === 'abort' || generation !== weekStatisticsGeneration) return;
             if (chartElement) chartElement.hidden = true;
@@ -322,10 +378,33 @@
         }));
     }
 
+    function loadViewStatistics() {
+        const generation = ++viewStatisticsGeneration;
+        const chartElement = document.getElementById('view-statistics');
+        trackRequest($.get('/admin/api/dashboard/viewStatistics', res => {
+            if (!controllerActive || generation !== viewStatisticsGeneration) return;
+            if (res.code != 200) {
+                if (chartElement) chartElement.hidden = true;
+                renderRetryState('.dashboard-view-chart-feedback', res.msg || i18n('浏览趋势加载失败，请重试'), loadViewStatistics);
+                return;
+            }
+            clearRequestState('.dashboard-view-chart-feedback');
+            if (chartElement) chartElement.hidden = false;
+            _viewChartData = res.data;
+            _renderViewChart();
+            bindChartObservers();
+        }).fail((xhr, status) => {
+            if (!controllerActive || status === 'abort' || generation !== viewStatisticsGeneration) return;
+            if (chartElement) chartElement.hidden = true;
+            renderRetryState('.dashboard-view-chart-feedback', i18n('网络异常，浏览趋势加载失败'), loadViewStatistics);
+        }));
+    }
+
     initAnnouncementDisclosure();
     loadAd();
     loadDashboardData($('.dashboard-data-type').val() || 4);
     loadWeekStatistics();
+    loadViewStatistics();
 
     $('.dashboard-data-type').off('.mdDashboard').on('change.mdDashboard', function () {
         loadDashboardData(this.value);

@@ -114,30 +114,53 @@ final class Schema
     /** 首页与商品详情的累计浏览量。 */
     public static function ensurePageView(): void
     {
-        if (self::tableExists('page_view')) {
-            return;
-        }
-
-        try {
-            Manager::schema()->create('page_view', static function (Blueprint $table): void {
-                $table->bigIncrements('id');
-                $table->unsignedTinyInteger('page_type')->comment('页面类型：0=首页，1=商品详情');
-                $table->unsignedInteger('target_id')->default(0)->comment('目标ID：首页固定为0');
-                $table->unsignedBigInteger('views')->default(0)->comment('累计浏览量');
-                $table->dateTime('update_time')->nullable();
-                $table->unique(['page_type', 'target_id'], 'uk_page_target');
-            });
-        } catch (\Throwable $e) {
-            if (!Manager::schema()->hasTable('page_view')) {
-                throw $e;
+        if (!self::tableExists('page_view')) {
+            try {
+                Manager::schema()->create('page_view', static function (Blueprint $table): void {
+                    $table->bigIncrements('id');
+                    $table->unsignedTinyInteger('page_type')->comment('页面类型：0=首页，1=商品详情');
+                    $table->unsignedInteger('target_id')->default(0)->comment('目标ID：首页固定为0');
+                    $table->unsignedBigInteger('views')->default(0)->comment('累计浏览量');
+                    $table->dateTime('update_time')->nullable();
+                    $table->unique(['page_type', 'target_id'], 'uk_page_target');
+                });
+            } catch (\Throwable $e) {
+                if (!Manager::schema()->hasTable('page_view')) {
+                    throw $e;
+                }
             }
+
+            self::$tableKnown['page_view'] = true;
+            if (!is_dir(self::MARK_DIR)) {
+                @mkdir(self::MARK_DIR, 0755, true);
+            }
+            @file_put_contents(self::MARK_DIR . '/table_page_view', (string)time());
         }
 
-        self::$tableKnown['page_view'] = true;
-        if (!is_dir(self::MARK_DIR)) {
-            @mkdir(self::MARK_DIR, 0755, true);
+        if (!self::tableExists('page_view_daily')) {
+            try {
+                Manager::schema()->create('page_view_daily', static function (Blueprint $table): void {
+                    $table->bigIncrements('id');
+                    $table->date('view_date')->comment('统计日期');
+                    $table->unsignedTinyInteger('page_type')->comment('页面类型：0=首页，1=商品详情');
+                    $table->unsignedInteger('target_id')->default(0)->comment('目标ID：首页固定为0');
+                    $table->unsignedBigInteger('views')->default(0)->comment('当日浏览量');
+                    $table->dateTime('update_time')->nullable();
+                    $table->unique(['view_date', 'page_type', 'target_id'], 'uk_date_page_target');
+                    $table->index(['page_type', 'view_date'], 'idx_page_date');
+                });
+            } catch (\Throwable $e) {
+                if (!Manager::schema()->hasTable('page_view_daily')) {
+                    throw $e;
+                }
+            }
+
+            self::$tableKnown['page_view_daily'] = true;
+            if (!is_dir(self::MARK_DIR)) {
+                @mkdir(self::MARK_DIR, 0755, true);
+            }
+            @file_put_contents(self::MARK_DIR . '/table_page_view_daily', (string)time());
         }
-        @file_put_contents(self::MARK_DIR . '/table_page_view', (string)time());
     }
 
     /** 店铺共享的对方货币与结算汇率：非 CNY 站点接入 CNY 货源时按此换算金额 */

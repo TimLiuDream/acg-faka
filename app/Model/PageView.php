@@ -62,7 +62,22 @@ class PageView extends Model
                 'update_time' => $now,
             ]);
 
-            return (int)DB::table('page_view')->where($where)->value('views');
+            $total = (int)DB::table('page_view')->where($where)->value('views');
+
+            try {
+                $dailyWhere = $where + ['view_date' => date('Y-m-d')];
+                DB::table('page_view_daily')->insertOrIgnore($dailyWhere + [
+                    'views' => 0,
+                    'update_time' => $now,
+                ]);
+                DB::table('page_view_daily')->where($dailyWhere)->increment('views', 1, [
+                    'update_time' => $now,
+                ]);
+            } catch (\Throwable $e) {
+                Log::inst()->error('每日浏览量计数失败：' . $e->getMessage());
+            }
+
+            return $total;
         } catch (\Throwable $e) {
             Log::inst()->error('浏览量计数失败：' . $e->getMessage());
             return 0;
@@ -114,5 +129,54 @@ class PageView extends Model
             Log::inst()->error('商品浏览量读取失败：' . $e->getMessage());
             return [];
         }
+    }
+
+    /**
+     * 最近若干天的首页与商品详情浏览趋势，缺少数据的日期补零。
+     *
+     * @return array{days:string[],home:int[],commodity:int[]}
+     */
+    public static function dailyTrend(int $days = 30): array
+    {
+        $days = max(7, min(90, $days));
+        $labels = [];
+        $home = [];
+        $commodity = [];
+
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $date = date('Y-m-d', strtotime("-{$i} day"));
+            $labels[] = $date;
+            $home[$date] = 0;
+            $commodity[$date] = 0;
+        }
+
+        try {
+            Schema::ensurePageView();
+            $rows = DB::table('page_view_daily')
+                ->whereBetween('view_date', [$labels[0], $labels[count($labels) - 1]])
+                ->selectRaw('view_date, page_type, SUM(views) as views')
+                ->groupBy('view_date', 'page_type')
+                ->get();
+
+            foreach ($rows as $row) {
+                $date = (string)$row->view_date;
+                if (!array_key_exists($date, $home)) {
+                    continue;
+                }
+                if ((int)$row->page_type === self::TYPE_HOME) {
+                    $home[$date] = (int)$row->views;
+                } elseif ((int)$row->page_type === self::TYPE_COMMODITY) {
+                    $commodity[$date] = (int)$row->views;
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::inst()->error('每日浏览量读取失败：' . $e->getMessage());
+        }
+
+        return [
+            'days' => array_map(static fn(string $date): string => date('m-d', strtotime($date)), $labels),
+            'home' => array_values($home),
+            'commodity' => array_values($commodity),
+        ];
     }
 }

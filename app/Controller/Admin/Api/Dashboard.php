@@ -155,4 +155,10 @@ class Dashboard extends \App\Controller\Base\API\Manage
             "week" => $weeks
         ]);
     }
+
+    /** 最近 30 天首页与商品详情的每日浏览趋势。 */
+    public function viewStatistics(): array
+    {
+        return $this->json(200, 'success', PageView::dailyTrend(30));
+    }
 }

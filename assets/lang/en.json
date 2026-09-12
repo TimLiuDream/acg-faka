@@ -4339,5 +4339,11 @@
   "常见问题": "Common questions",
   "浏览量": "Views",
   "首页累计浏览": "Homepage views",
-  "商品累计浏览": "Product views"
+  "商品累计浏览": "Product views",
+  "每日浏览": "Daily views",
+  "最近 30 天": "Last 30 days",
+  "首页浏览": "Homepage views",
+  "商品浏览": "Product views",
+  "浏览趋势加载失败，请重试": "Failed to load view trends. Please try again.",
+  "网络异常，浏览趋势加载失败": "Network error. Failed to load view trends."
 }

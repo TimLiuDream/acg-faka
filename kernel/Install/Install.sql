@@ -205,6 +205,19 @@ CREATE TABLE `__PREFIX__page_view` (
                                       UNIQUE INDEX `uk_page_target`(`page_type`, `target_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
+DROP TABLE IF EXISTS `__PREFIX__page_view_daily`;
+CREATE TABLE `__PREFIX__page_view_daily` (
+                                            `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+                                            `view_date` date NOT NULL COMMENT '统计日期',
+                                            `page_type` tinyint UNSIGNED NOT NULL COMMENT '页面类型：0=首页，1=商品详情',
+                                            `target_id` int UNSIGNED NOT NULL DEFAULT 0 COMMENT '目标ID：首页固定为0',
+                                            `views` bigint UNSIGNED NOT NULL DEFAULT 0 COMMENT '当日浏览量',
+                                            `update_time` datetime NULL DEFAULT NULL,
+                                            PRIMARY KEY (`id`) USING BTREE,
+                                            UNIQUE INDEX `uk_date_page_target`(`view_date`, `page_type`, `target_id`) USING BTREE,
+                                            INDEX `idx_page_date`(`page_type`, `view_date`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+
 
 
 DROP TABLE IF EXISTS `__PREFIX__config`;

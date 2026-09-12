@@ -124,7 +124,7 @@
                     <!--end::Stat grid-->
 
                     <!--begin::Chart-->
-                    <div class="card">
+                    <div class="card mb-4">
                         <div class="card-header border-0">
                             <div class="card-title">
                                 <h3 class="d-flex align-items-center gap-2">
@@ -138,6 +138,23 @@
                         </div>
                     </div>
                     <!--end::Chart-->
+
+                    <!--begin::View chart-->
+                    <div class="card">
+                        <div class="card-header border-0">
+                            <div class="card-title d-flex align-items-center justify-content-between w-100 gap-3">
+                                <h3 class="d-flex align-items-center gap-2 mb-0">
+                                    <i class="fa-duotone fa-regular fa-chart-area text-primary"></i>#{t("每日浏览")}
+                                </h3>
+                                <span class="text-muted fs-7">#{t("最近 30 天")}</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="dashboard-view-chart-feedback" role="status" aria-live="polite" hidden></div>
+                            <div id="view-statistics" style="height: 320px; width: 100%;"></div>
+                        </div>
+                    </div>
+                    <!--end::View chart-->
                 </div>
                 <!--end::Main-->
             </div>
@@ -148,5 +165,5 @@
 </div>
 <!--end::Content-->
 
-#{ready("/assets/admin/controller/dashboard/index.js?build=20260912-page-views-1")}
+#{ready("/assets/admin/controller/dashboard/index.js?build=20260912-daily-views-1")}
 #{include file="../Footer.html"}
