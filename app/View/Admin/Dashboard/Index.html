@@ -109,6 +109,8 @@
                         #{include file="../Component/StatCard.html" accent="success" icon="fa-sack-dollar" label="盈利" vclass="order_profit" value="—" itemClass="md-stat-grid__item--wide"}
                         #{include file="../Component/StatCard.html" accent="primary" icon="fa-circle-dollar" label="交易金额" vclass="turnover" value="—" itemClass="md-stat-grid__item--wide"}
                         #{include file="../Component/StatCard.html" accent="success" icon="fa-receipt" label="订单" vclass="order_num" value="—"}
+                        #{include file="../Component/StatCard.html" accent="primary" icon="fa-house" label="首页累计浏览" vclass="home_views" value="—"}
+                        #{include file="../Component/StatCard.html" accent="secondary" icon="fa-eye" label="商品累计浏览" vclass="commodity_views" value="—"}
                         #{include file="../Component/StatCard.html" accent="secondary" icon="fa-store" label="子站" vclass="business" value="—"}
                         #{include file="../Component/StatCard.html" accent="danger" icon="fa-money-bill-wave" label="未处理提现" vclass="cash_status_0" value="—"}
                         #{include file="../Component/StatCard.html" accent="success" icon="fa-money-bill" label="成功提现" vclass="cash_money_status_1" value="—" itemClass="md-stat-grid__item--wide"}
@@ -146,5 +148,5 @@
 </div>
 <!--end::Content-->
 
-#{ready("/assets/admin/controller/dashboard/index.js?build=20260911-all-data-1")}
+#{ready("/assets/admin/controller/dashboard/index.js?build=20260912-page-views-1")}
 #{include file="../Footer.html"}

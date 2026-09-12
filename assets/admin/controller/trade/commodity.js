@@ -938,6 +938,7 @@ ACC_JP_6M_0KLD-22MM-PP31║${i18n('地区')}:${i18n('日区')}·${i18n('时长')
         , {field: 'order_yesterday_amount', title: '昨日'}
         , {field: 'order_week_amount', title: '本周'}
         , {field: 'order_all_amount', title: '全部'}
+        , {field: 'view_count', title: '浏览量'}
         , {field: 'sort', title: '排序'}
         , {
             field: 'share_url', title: '推广链接', type: "button", buttons: [

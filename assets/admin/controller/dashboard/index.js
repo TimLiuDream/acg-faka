@@ -192,6 +192,8 @@
                 const m = v => format.currencySymbol() + Number(v || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 $('.turnover').text(m(res.data.turnover));
                 $('.order_num').text(n(res.data.order_num));
+                $('.home_views').text(n(res.data.home_views));
+                $('.commodity_views').text(n(res.data.commodity_views));
                 $('.business').text(n(res.data.business));
                 $('.cash_status_0').text(n(res.data.cash_status_0));
                 $('.cash_money_status_1').text(m(res.data.cash_money_status_1));

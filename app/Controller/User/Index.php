@@ -9,6 +9,7 @@ use App\Controller\Base\View\User;
 use App\Interceptor\UserVisitor;
 use App\Interceptor\Waf;
 use App\Model\Config;
+use App\Model\PageView;
 use App\Service\Shop;
 use App\Util\Tree;
 use Kernel\Annotation\Inject;
@@ -43,12 +44,14 @@ class Index extends User
         //分类名同样是动态文案，与 API 侧 Api\Index::data() 的处理保持一致
         $category = Tree::generate(\Kernel\Util\Lang::transList($this->shop->getCategory($this->getUserGroup()), ['name']));
         hook(Hook::USER_API_INDEX_CATEGORY_LIST, $category);
+        $homeViews = PageView::hitHome();
 
         return $this->theme("购物", "INDEX", "Index/Index.html", [
             'user' => $this->getUser(),
             'from' => $from,
             "categoryId" => $_GET['cid'],
-            "category" => $category
+            "category" => $category,
+            "homeViews" => $homeViews
         ]);
     }
 
@@ -62,6 +65,7 @@ class Index extends User
     {
         $item = $this->shop->getItem((int)$_GET['mid'], $this->getUser(), $this->getUserGroup());
         hook(Hook::USER_API_INDEX_COMMODITY_DETAIL_INFO, $item);
+        $item['views'] = PageView::hitCommodity((int)$item['id']);
 
         $item['is_stock'] = $item['stock'] > 0;
         if ($item['inventory_hidden'] == 1) {

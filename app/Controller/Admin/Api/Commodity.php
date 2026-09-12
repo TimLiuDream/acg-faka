@@ -183,6 +183,12 @@ class Commodity extends Manage
         if (\App\Util\Schema::tableExists('commodity_group')) {
             $this->detachFromCommodityGroups($commodityIds);
         }
+        if (\App\Util\Schema::tableExists('page_view')) {
+            \App\Model\PageView::query()
+                ->where('page_type', \App\Model\PageView::TYPE_COMMODITY)
+                ->whereIn('target_id', $commodityIds)
+                ->delete();
+        }
     }
 
     /**
@@ -423,6 +429,7 @@ class Commodity extends Manage
         $clientUrl = Client::getUrl();
         //无限极分类完整路径：一次性加载分类扁平映射，循环内复用避免 N+1
         $categoryFlatMap = $data['list'] ? \App\Model\Category::flatMap() : [];
+        $viewCounts = \App\Model\PageView::commodityCounts(array_column($data['list'], 'id'));
         foreach ($data['list'] as &$val) {
             $url = $clientUrl;
             if ($val['owner'] && $val['owner']['business']) {
@@ -434,6 +441,7 @@ class Commodity extends Manage
                 }
             }
             $val['share_url'] = $url . "/item/{$val['id']}";
+            $val['view_count'] = $viewCounts[(int)$val['id']] ?? 0;
             //顶级分类 -> 子分类 -> 商品所属分类
             $val['category_path'] = \App\Model\Category::resolvePath((int)($val['category_id'] ?? 0), $categoryFlatMap);
         }

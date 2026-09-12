@@ -111,6 +111,35 @@ final class Schema
         @file_put_contents(self::MARK_DIR . '/table_card_redeem', (string)time());
     }
 
+    /** 首页与商品详情的累计浏览量。 */
+    public static function ensurePageView(): void
+    {
+        if (self::tableExists('page_view')) {
+            return;
+        }
+
+        try {
+            Manager::schema()->create('page_view', static function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->unsignedTinyInteger('page_type')->comment('页面类型：0=首页，1=商品详情');
+                $table->unsignedInteger('target_id')->default(0)->comment('目标ID：首页固定为0');
+                $table->unsignedBigInteger('views')->default(0)->comment('累计浏览量');
+                $table->dateTime('update_time')->nullable();
+                $table->unique(['page_type', 'target_id'], 'uk_page_target');
+            });
+        } catch (\Throwable $e) {
+            if (!Manager::schema()->hasTable('page_view')) {
+                throw $e;
+            }
+        }
+
+        self::$tableKnown['page_view'] = true;
+        if (!is_dir(self::MARK_DIR)) {
+            @mkdir(self::MARK_DIR, 0755, true);
+        }
+        @file_put_contents(self::MARK_DIR . '/table_page_view', (string)time());
+    }
+
     /** 店铺共享的对方货币与结算汇率：非 CNY 站点接入 CNY 货源时按此换算金额 */
     public static function ensureSharedCurrency(): void
     {

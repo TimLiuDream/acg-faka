@@ -48,6 +48,10 @@
                             #{if $item.delivery_way == 0}#{t("自动发货")}#{else}#{t("在线发货")}#{/if}
                         </span>
                         <span class="ln-item-badge">#{t("已售")} #{$item.order_sold}</span>
+                        <span class="ln-item-badge">
+                            <i class="fa-duotone fa-regular fa-eye"></i>
+                            #{t("浏览量")} #{$item.views}
+                        </span>
                         <span class="ln-item-badge item-stock">#{t("库存")} #{$item.stock}</span>
                     </div>
 

@@ -194,6 +194,17 @@ CREATE TABLE `__PREFIX__commodity`  (
 
 INSERT INTO `__PREFIX__commodity` VALUES (1, 1, 'DEMO', '<p>该商品是演示商品</p>', '/favicon.ico', 0.00, 1.00, 0.90, 1, 0, '2021-11-26 18:01:30', 1, '8AE80574F3CA98BE', 1, 0, '', 0, 0, 1, 1, NULL, '', 0.00, NULL, 999999, 0, 0, 0, NULL, NULL, 0, 0.00, 0, NULL, 0, 0, 0, 0, NULL, NULL, NULL, 0, 0, 0, 0, NULL, 0, 0, 0, 0);
 
+DROP TABLE IF EXISTS `__PREFIX__page_view`;
+CREATE TABLE `__PREFIX__page_view` (
+                                      `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+                                      `page_type` tinyint UNSIGNED NOT NULL COMMENT '页面类型：0=首页，1=商品详情',
+                                      `target_id` int UNSIGNED NOT NULL DEFAULT 0 COMMENT '目标ID：首页固定为0',
+                                      `views` bigint UNSIGNED NOT NULL DEFAULT 0 COMMENT '累计浏览量',
+                                      `update_time` datetime NULL DEFAULT NULL,
+                                      PRIMARY KEY (`id`) USING BTREE,
+                                      UNIQUE INDEX `uk_page_target`(`page_type`, `target_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+
 
 
 DROP TABLE IF EXISTS `__PREFIX__config`;

@@ -6,6 +6,7 @@ namespace App\Controller\Admin\Api;
 
 use App\Model\Business;
 use App\Model\UserRecharge;
+use App\Model\PageView;
 use App\Util\Date;
 use Kernel\Annotation\Interceptor;
 use Kernel\Util\Decimal;
@@ -79,6 +80,10 @@ class Dashboard extends \App\Controller\Base\API\Manage
         $data['cash_money_status_1'] = (clone $cash)->where("status", 1)->sum("amount");
         //充值金额
         $data['recharge_amount'] = (clone $recharge)->where("status", 1)->sum("amount");
+
+        $pageViews = PageView::summary();
+        $data['home_views'] = $pageViews['home'];
+        $data['commodity_views'] = $pageViews['commodity'];
 
 
         return $this->json(200, 'success', $data);
