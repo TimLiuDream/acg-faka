@@ -57,6 +57,91 @@
         </div>
     </section>
 
+    #{if $setting.codex_reset_enabled == 1}
+    <section class="ln-section ln-codex-monitor" id="codex-reset" data-codex-reset-monitor>
+        <div class="container">
+            <div class="ln-section-head ln-codex-monitor__head">
+                <div>
+                    <div class="ln-kicker">Codex reset watch</div>
+                    <h2>#{t("Codex 重置监控")}</h2>
+                </div>
+                <p>#{t("查看公开的额度重置与重置卡发放记录，时间统一换算为北京时间。")}</p>
+            </div>
+
+            <div class="ln-codex-state" data-reset-state aria-live="polite">
+                <span class="ln-codex-spinner" aria-hidden="true"></span>
+                <strong>#{t("正在读取重置记录")}</strong>
+                <small>#{t("请稍候…")}</small>
+            </div>
+
+            <div class="ln-codex-content" data-reset-content hidden>
+                <div class="ln-codex-overview">
+                    <article class="ln-codex-latest">
+                        <div class="ln-codex-card-title">
+                            <span class="ln-codex-icon"><i class="fa-duotone fa-regular fa-calendar-check"></i></span>
+                            <div><b>#{t("最近一次记录")}</b><small data-latest-kind></small></div>
+                            <span class="ln-codex-status" data-latest-status></span>
+                        </div>
+                        <div class="ln-codex-time">
+                            <strong data-latest-date>—</strong>
+                            <b data-latest-time></b>
+                            <small data-latest-meta></small>
+                        </div>
+                        <div class="ln-codex-post" data-latest-post>
+                            <div><b>#{t("来源动态")}</b><time data-latest-post-time></time></div>
+                            <p data-latest-post-text></p>
+                            <a data-latest-post-link target="_blank" rel="noopener noreferrer nofollow">#{t("查看原帖")} <span>↗</span></a>
+                        </div>
+                    </article>
+
+                    <aside class="ln-codex-recent">
+                        <div class="ln-codex-card-title">
+                            <span class="ln-codex-icon"><i class="fa-duotone fa-regular fa-clock-rotate-left"></i></span>
+                            <div><b>#{t("近期记录")}</b><small>#{t("最近的额度重置与重置卡发放")}</small></div>
+                        </div>
+                        <div class="ln-codex-recent-list" data-recent-list></div>
+                    </aside>
+                </div>
+
+                <div class="ln-codex-calendar-layout">
+                    <div class="ln-codex-calendar">
+                        <div class="ln-codex-calendar-head">
+                            <div>
+                                <span class="ln-codex-icon"><i class="fa-duotone fa-regular fa-calendar-days"></i></span>
+                                <strong data-calendar-title></strong>
+                            </div>
+                            <div class="ln-codex-calendar-actions">
+                                <button type="button" data-calendar-prev aria-label="#{t('上个月')}">‹</button>
+                                <button type="button" data-calendar-today>#{t("回到最近")}</button>
+                                <button type="button" data-calendar-next aria-label="#{t('下个月')}">›</button>
+                            </div>
+                        </div>
+                        <div class="ln-codex-legend">
+                            <span><i class="is-reset"></i>#{t("全员重置")}</span>
+                            <span><i class="is-credit"></i>#{t("发重置卡")}</span>
+                        </div>
+                        <div class="ln-codex-weekdays" data-calendar-weekdays></div>
+                        <div class="ln-codex-days" data-calendar-days></div>
+                    </div>
+
+                    <aside class="ln-codex-day-detail">
+                        <div class="ln-codex-day-detail__head">
+                            <div><span>#{t("所选日期")}</span><strong data-selected-date>—</strong></div>
+                            <small data-selected-count></small>
+                        </div>
+                        <div class="ln-codex-day-events" data-selected-events></div>
+                    </aside>
+                </div>
+
+                <footer class="ln-codex-source">
+                    <span><i class="fa-duotone fa-regular fa-shield-check"></i><span data-checked-at></span></span>
+                    <a data-source-link href="https://aihot.news/codex-reset" target="_blank" rel="noopener noreferrer nofollow">#{t("查看数据来源")} <span>↗</span></a>
+                </footer>
+            </div>
+        </div>
+    </section>
+    #{/if}
+
     <section class="ln-section ln-trust" id="trust">
         <div class="container">
             <div class="ln-kicker">A clear process</div>
@@ -97,4 +182,7 @@
 
 </main>
 #{ready("/assets/user/controller/index/index.js?build=20260909-guest-item-link-1")}
+#{if $setting.codex_reset_enabled == 1}
+#{ready("/app/View/User/Theme/LiuNeng/assets/codex-reset.js?build=20260914-1")}
+#{/if}
 #{include file="./Footer.html"}

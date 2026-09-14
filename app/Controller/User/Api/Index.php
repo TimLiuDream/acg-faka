@@ -17,6 +17,7 @@ use App\Model\Order;
 use App\Model\Pay;
 use App\Model\UserCommodity;
 use App\Service\Query;
+use App\Service\CodexResetFeed;
 use App\Service\Shared;
 use App\Service\Shop;
 use App\Util\Client;
@@ -51,6 +52,22 @@ class Index extends User
 
     #[Inject]
     private Shop $shop;
+
+    /**
+     * Optional Codex reset snapshot for the LiuNeng homepage.
+     * External fetching stays disabled until the theme owner explicitly
+     * enables it after obtaining the data provider's commercial permission.
+     */
+    public function codexResets(): array
+    {
+        $theme = Theme::getConfig('LiuNeng');
+        $enabled = (int)($theme['setting']['codex_reset_enabled'] ?? 0) === 1;
+        if (!$enabled) {
+            return $this->json(data: ['enabled' => false]);
+        }
+
+        return $this->json(data: ['enabled' => true] + CodexResetFeed::snapshot());
+    }
 
 
     /**

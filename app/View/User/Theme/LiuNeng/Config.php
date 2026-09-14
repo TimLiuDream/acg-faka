@@ -10,7 +10,7 @@ interface Config
     public const INFO = [
         'NAME' => 'Dreamer Labs',
         'AUTHOR' => 'TimLiu',
-        'VERSION' => '0.2.0',
+        'VERSION' => '0.3.0',
         'WEB_SITE' => '#',
         'DESCRIPTION' => '面向 AI 会员与数字服务的清爽品牌主题',
         'RENDER' => Render::ENGINE_SMARTY,
@@ -40,6 +40,12 @@ interface Config
             'name' => 'hero_description',
             'type' => 'input',
             'placeholder' => '一句话说明服务价值',
+        ],
+        [
+            'title' => 'Codex 重置监控（取得 AIHOT 商业授权后启用）',
+            'name' => 'codex_reset_enabled',
+            'type' => 'switch',
+            'placeholder' => '启用|关闭',
         ],
         [
             'title' => '更多联系链接',
